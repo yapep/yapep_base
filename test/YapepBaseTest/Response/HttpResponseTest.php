@@ -18,7 +18,7 @@ use YapepBaseTest\Mock\Response\OutputMock;
 use YapepBaseTest\Mock\Response\ViewMock;
 
 
-class HttpResponseTest extends \YapepBaseTest\BaseTest {
+class HttpResponseTest extends \YapepBaseTest\TestAbstract {
 	/**
 	 * @var OutputMock
 	 */

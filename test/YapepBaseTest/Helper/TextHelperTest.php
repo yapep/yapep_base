@@ -14,7 +14,7 @@ namespace YapepBaseTest\Helper;
 use YapepBase\Helper\TextHelper;
 
 
-class TextHelperTest extends \YapepBaseTest\BaseTest {
+class TextHelperTest extends \YapepBaseTest\TestAbstract {
 
 	/**
 	 * Tests the stripSlashes() method.

@@ -15,7 +15,7 @@ namespace YapepBaseTest\Mock\Database;
  *
  * @codeCoverageIgnore
  */
-class TestTableMysqlMock extends \YapepBase\Database\MysqlTable {
+class TestTableMysqlMock extends \YapepBase\Database\MysqlTableAbstract {
 	/**
 	 * The name of the table.
 	 *

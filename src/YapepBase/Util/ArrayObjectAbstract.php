@@ -9,6 +9,8 @@
  */
 
 namespace YapepBase\Util;
+
+
 use YapepBase\Exception\IndexOutOfBoundsException;
 
 /**

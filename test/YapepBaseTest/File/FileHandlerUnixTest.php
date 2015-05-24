@@ -14,7 +14,7 @@ use YapepBase\Exception\File\Exception;
 use YapepBase\File\FileHandlerUnix;
 
 
-class FileHandlerUnixTest extends \YapepBaseTest\BaseTest {
+class FileHandlerUnixTest extends \YapepBaseTest\TestAbstract {
 
 	/**
 	 * The FileHandler object.

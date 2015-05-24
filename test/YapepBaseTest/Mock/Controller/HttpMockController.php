@@ -13,7 +13,7 @@ namespace YapepBaseTest\Mock\Controller;
 /**
  * @codeCoverageIgnore
  */
-class HttpMockController extends \YapepBase\Controller\HttpController {
+class HttpMockController extends \YapepBase\Controller\HttpControllerAbstract {
 	public function testRedirect() {
 		$this->redirectToUrl('http://www.example.com/', 301);
 	}

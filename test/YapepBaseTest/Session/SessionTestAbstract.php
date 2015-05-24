@@ -26,7 +26,7 @@ use YapepBaseTest\Mock\Storage\StorageMock;
  * @package    YapepBaseTest
  * @subpackage Test\Session
  */
-abstract class SessionTestAbstract extends \YapepBaseTest\BaseTest {
+abstract class SessionTestAbstract extends \YapepBaseTest\TestAbstract {
 
 	/**
 	 * Sets up the fixture, for example, open a network connection.

@@ -17,7 +17,7 @@ use YapepBase\Database\DbFactory;
 /**
  * DbFactory test case.
  */
-class DbFactoryTest extends \YapepBaseTest\BaseTest {
+class DbFactoryTest extends \YapepBaseTest\TestAbstract {
 
 	/**
 	 * Config instance
@@ -56,7 +56,7 @@ class DbFactoryTest extends \YapepBaseTest\BaseTest {
 	 */
 	public function testSuccessfulConnection() {
 		$connection = DbFactory::getConnection('test', DbFactory::TYPE_READ_WRITE);
-		$this->assertInstanceOf('\YapepBase\Database\DbConnection', $connection, 'Invalid connection type');
+		$this->assertInstanceOf('\YapepBase\Database\DbConnectionAbstract', $connection, 'Invalid connection type');
 		$connection2 = DbFactory::getConnection('test', DbFactory::TYPE_READ_WRITE);
 		$this->assertSame($connection, $connection2, 'The returned instances are not the same');
 	}

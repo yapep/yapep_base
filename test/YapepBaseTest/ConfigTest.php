@@ -9,7 +9,7 @@ use YapepBase\Exception\ConfigException;
  *
  * @todo add checks for exception handling when we start throwing exceptions for not-set config values
  */
-class ConfigTest extends \YapepBaseTest\BaseTest
+class ConfigTest extends \YapepBaseTest\TestAbstract
 {
 	/**
 	 * @var \YapepBase\Config

@@ -19,7 +19,7 @@ use YapepBase\Autoloader\MapAutoloader;
  * @package    YapepBaseTest
  * @subpackage Autoloader
  */
-class MapAutoloaderTest extends \YapepBaseTest\BaseTest {
+class MapAutoloaderTest extends \YapepBaseTest\TestAbstract {
 	/**
 	 * Tests the loadClass() method.
 	 *

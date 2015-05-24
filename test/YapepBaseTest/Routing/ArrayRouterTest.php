@@ -24,7 +24,7 @@ use YapepBaseTest\Mock\Request\RequestMock;
  * @package    YapepBaseTest
  * @subpackage subpackage
  */
-class ArrayRouterTest extends \YapepBaseTest\BaseTest {
+class ArrayRouterTest extends \YapepBaseTest\TestAbstract {
 
 	/**
 	 * Stores the available routes

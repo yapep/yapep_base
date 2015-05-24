@@ -23,7 +23,7 @@ use YapepBase\Exception\NotImplementedException;
  * @subpackage   Syslog
  * @codeCoverageIgnore
  */
-class LegacySyslogConnection extends SyslogConnection {
+class LegacySyslogConnection extends SyslogConnectionAbstract {
 
 	/**
 	 * Set the path of the log socket. Only works before open()/openlog(). Normally you shouldn't need to use it.

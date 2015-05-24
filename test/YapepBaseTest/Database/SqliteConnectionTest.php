@@ -17,7 +17,7 @@ use YapepBase\Database\SqliteConnection;
 /**
  * SqliteConnection test case.
  */
-class SqliteConnectionTest extends \YapepBaseTest\BaseTest {
+class SqliteConnectionTest extends \YapepBaseTest\TestAbstract {
 
 	/**
 	 * @var \YapepBase\Database\SqliteConnection

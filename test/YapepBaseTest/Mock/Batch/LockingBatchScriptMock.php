@@ -13,7 +13,7 @@ namespace YapepBaseTest\Mock\Batch;
 /**
  * @codeCoverageIgnore
  */
-class LockingBatchScriptMock extends \YapepBase\Batch\LockingBatchScript {
+class LockingBatchScriptMock extends \YapepBase\Batch\LockingBatchScriptAbstract {
 
 	public $hasWorked = false;
 

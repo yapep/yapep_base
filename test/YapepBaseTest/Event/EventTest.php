@@ -14,7 +14,7 @@ namespace YapepBaseTest\Event;
 use YapepBase\Event\Event;
 
 
-class EventTest extends \YapepBaseTest\BaseTest {
+class EventTest extends \YapepBaseTest\TestAbstract {
 
 	public function testEvent() {
 		$event = new Event('test');

@@ -20,7 +20,7 @@ use YapepBaseTest\Mock\Autoloader\AutoloaderMock;
  * @package    YapepBaseTest
  * @subpackage Autoloader
  */
-class AutoloaderRegistryTest extends \YapepBaseTest\BaseTest {
+class AutoloaderRegistryTest extends \YapepBaseTest\TestAbstract {
 
 	/**
 	 * The autoloader registry object.

@@ -12,7 +12,7 @@ namespace PHP\Lang;
 
 
 
-class IndexOutOfBoundsExceptionTest extends \YapepBaseTest\BaseTest {
+class IndexOutOfBoundsExceptionTest extends \YapepBaseTest\TestAbstract {
 	/**
 	 * Tests throwing the exception with an offset.
 	 */

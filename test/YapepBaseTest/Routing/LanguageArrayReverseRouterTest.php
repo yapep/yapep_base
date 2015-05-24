@@ -20,7 +20,7 @@ use YapepBase\Router\LanguageArrayReverseRouter;
  * @package    YapepBaseTest
  * @subpackage subpackage
  */
-class LanguageArrayReverseRouterTest extends \YapepBaseTest\BaseTest {
+class LanguageArrayReverseRouterTest extends \YapepBaseTest\TestAbstract {
 
 	/**
 	 * Prepares the environment before running a test.

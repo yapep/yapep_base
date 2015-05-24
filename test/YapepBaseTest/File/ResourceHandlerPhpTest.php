@@ -18,7 +18,7 @@ use org\bovigo\vfs\vfsStreamWrapper;
 
 use YapepBase\File\ResourceHandlerPhp;
 
-class ResourceHandlerPhpTest extends \YapepBaseTest\BaseTest {
+class ResourceHandlerPhpTest extends \YapepBaseTest\TestAbstract {
 
 	/**
 	 * Path to the test file.

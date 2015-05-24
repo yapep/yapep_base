@@ -24,9 +24,9 @@ use YapepBaseTest\Mock\Response\ResponseMock;
 use YapepBaseTest\Mock\Request\RequestMock;
 
 /**
- * Test class for HttpController.
+ * Test class for HttpControllerAbstract.
  */
-class HttpControllerTest extends \YapepBaseTest\BaseTest {
+class HttpControllerTest extends \YapepBaseTest\TestAbstract {
 
 	protected $originalObLevel;
 
@@ -57,7 +57,7 @@ class HttpControllerTest extends \YapepBaseTest\BaseTest {
 			$response = new HttpResponse();
 			$o = new HttpMockController($request, $response);
 			$this->resetObToLevel($previousLevel);
-			$this->fail('Passing a non-HTTP request to the HttpController should result in a ControllerException');
+			$this->fail('Passing a non-HTTP request to the HttpControllerAbstract should result in a ControllerException');
 		} catch (ControllerException $e) {
 			$this->resetObToLevel($previousLevel);
 			$this->assertEquals(ControllerException::ERR_INCOMPATIBLE_REQUEST, $e->getCode());
@@ -68,7 +68,7 @@ class HttpControllerTest extends \YapepBaseTest\BaseTest {
 			$response = new ResponseMock();
 			$o = new HttpMockController($request, $response);
 			$this->resetObToLevel($previousLevel);
-			$this->fail('Passing a non-HTTP request to the HttpController should result in a ControllerException');
+			$this->fail('Passing a non-HTTP request to the HttpControllerAbstract should result in a ControllerException');
 		} catch (ControllerException $e) {
 			$this->resetObToLevel($previousLevel);
 			$this->assertEquals(ControllerException::ERR_INCOMPATIBLE_RESPONSE, $e->getCode());

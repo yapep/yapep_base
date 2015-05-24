@@ -22,7 +22,7 @@ use YapepBaseTest\Mock\Session\SessionMock;
  * @package    YapepBaseTest
  * @subpackage Test\Session
  */
-class SessionRegistryTest extends \YapepBaseTest\BaseTest {
+class SessionRegistryTest extends \YapepBaseTest\TestAbstract {
 
 	public function testRegistration() {
 		$session = new SessionMock('test');

@@ -14,7 +14,7 @@ namespace YapepBaseTest\Mock\Controller;
  * This is the mock controller class for the ApplicationTest
  * @codeCoverageIgnore
  */
-class ApplicationMockController extends \YapepBase\Controller\BaseController {
+class ApplicationMockController extends \YapepBase\Controller\ControllerAbstract {
 	public function doTest() {
 		return 'test';
 	}

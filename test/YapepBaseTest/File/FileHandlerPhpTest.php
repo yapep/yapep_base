@@ -19,7 +19,7 @@ use org\bovigo\vfs\vfsStreamWrapper;
 use YapepBase\File\FileHandlerPhp;
 
 
-class FileHandlerPhpTest extends \YapepBaseTest\BaseTest {
+class FileHandlerPhpTest extends \YapepBaseTest\TestAbstract {
 
 	/**
 	 * The FileHandler object.

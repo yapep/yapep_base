@@ -20,7 +20,7 @@ use YapepBaseTest\Mock\Log\LoggerMock;
 /**
  * Test class for LoggingErrorHandler.
  */
-class LoggingErrorHandlerTest extends \YapepBaseTest\BaseTest {
+class LoggingErrorHandlerTest extends \YapepBaseTest\TestAbstract {
 
 	/**
 	 * @var LoggerMock

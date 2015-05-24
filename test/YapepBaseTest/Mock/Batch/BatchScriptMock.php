@@ -10,15 +10,15 @@
 
 namespace YapepBaseTest\Mock\Batch;
 
-use YapepBase\Batch\BatchScript;
+use YapepBase\Batch\BatchScriptAbstract;
 
 /**
- * Mock class for testing the BatchScript class
+ * Mock class for testing the BatchScriptAbstract class
  *
  * @package    YapepBaseTest
  * @subpackage Test\Mock\Batch
  */
-class BatchScriptMock extends BatchScript {
+class BatchScriptMock extends BatchScriptAbstract {
 
 	/**
 	 * Data storage for the closure.

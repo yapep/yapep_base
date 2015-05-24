@@ -23,7 +23,7 @@ use YapepBase\Shell\CommandOutput;
  * @package    YapepBaseTest
  * @subpackage Helper
  */
-class CommandOutputHelperTest extends \YapepBaseTest\BaseTest {
+class CommandOutputHelperTest extends \YapepBaseTest\TestAbstract {
 
 	/**
 	 * The test file path for the runCommandWithStdErr method

@@ -20,7 +20,7 @@ use YapepBase\Exception\RouterException;
  * @package    YapepBaseTest
  * @subpackage subpackage
  */
-class ArrayReverseRouterTest extends \YapepBaseTest\BaseTest {
+class ArrayReverseRouterTest extends \YapepBaseTest\TestAbstract {
 
 	/**
 	 * Prepares the environment before running a test.

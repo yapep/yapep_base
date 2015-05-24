@@ -22,7 +22,7 @@ use YapepBaseTest\Mock\I18n\TranslatorMock;
  * @package    YapepBase
  * @subpackage Helper
  */
-class HelperTest extends \YapepBaseTest\BaseTest {
+class HelperTest extends \YapepBaseTest\TestAbstract {
 
 	protected function setUp() {
 		parent::setUp();

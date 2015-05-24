@@ -24,7 +24,7 @@ use YapepBaseTest\Mock\Request\RequestMock;
  * @package    YapepBaseTest
  * @subpackage subpackage
  */
-class AutoRouterTest extends \YapepBaseTest\BaseTest {
+class AutoRouterTest extends \YapepBaseTest\TestAbstract {
 
 	/**
 	 * Prepares the environment before running a test.

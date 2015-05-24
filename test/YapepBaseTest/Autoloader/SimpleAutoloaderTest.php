@@ -19,7 +19,7 @@ use YapepBaseTest\Mock\Autoloader\SimpleAutoloaderMock;
  * @package    YapepBaseTest
  * @subpackage Autoloader
  */
-class SimpleAutoloaderTest extends \YapepBaseTest\BaseTest {
+class SimpleAutoloaderTest extends \YapepBaseTest\TestAbstract {
 
 	/**
 	 * The SimpleAutoloader object.

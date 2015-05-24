@@ -14,7 +14,7 @@ namespace YapepBaseTest\Mock\Controller;
 /**
  * @codeCoverageIgnore
  */
-class RestMockController extends \YapepBase\Controller\RestController {
+class RestMockController extends \YapepBase\Controller\RestControllerAbstract {
 	function getXml() {
 		$this->response->setContentType(\YapepBase\Mime\MimeType::XML, 'UTF-8');
 		return array('test1' => 'test');

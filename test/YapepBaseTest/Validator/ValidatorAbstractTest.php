@@ -23,7 +23,7 @@ use YapepBaseTest\Mock\Validator\MockValidator;
  * @package    YapepBaseTest
  * @subpackage Validator
  */
-class ValidatorAbstractTest extends \YapepBaseTest\BaseTest {
+class ValidatorAbstractTest extends \YapepBaseTest\TestAbstract {
 
 	/**
 	 * The mock validator object.

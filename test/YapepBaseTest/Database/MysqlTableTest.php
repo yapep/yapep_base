@@ -12,14 +12,14 @@ namespace YapepBaseTest\Database;
 
 use YapepBase\Config;
 use YapepBase\Database\DbFactory;
-use YapepBase\Database\DbTable;
+use YapepBase\Database\DbTableAbstract;
 
 use YapepBaseTest\Mock\Database\TestTableMysqlMock;
 
 /**
- * MysqlTable test case.
+ * MysqlTableAbstract test case.
  */
-class MysqlTableTest extends \YapepBaseTest\BaseTest {
+class MysqlTableTest extends \YapepBaseTest\TestAbstract {
 
 	/**
 	 * Config instance
@@ -31,7 +31,7 @@ class MysqlTableTest extends \YapepBaseTest\BaseTest {
 	/**
 	 * Mysql connection.
 	 *
-	 * @var \YapepBase\Database\DbConnection
+	 * @var \YapepBase\Database\DbConnectionAbstract
 	 */
 	protected $connection;
 
@@ -176,7 +176,7 @@ class MysqlTableTest extends \YapepBaseTest\BaseTest {
 		));
 
 		$rows = $table->select(array(TestTableMysqlMock::FIELD_VALUE => 'testValue1'),
-			TestTableMysqlMock::FIELD_KEY, DbTable::ORDER_DESC);
+			TestTableMysqlMock::FIELD_KEY, DbTableAbstract::ORDER_DESC);
 
 		$expectedResult = array(
 			array(TestTableMysqlMock::FIELD_KEY => 'testKey3', TestTableMysqlMock::FIELD_VALUE => 'testValue1'),
@@ -201,10 +201,10 @@ class MysqlTableTest extends \YapepBaseTest\BaseTest {
 		);
 
 		$itemCount = true;
-		$rows = $table->selectPaged(array(), TestTableMysqlMock::FIELD_KEY, DbTable::ORDER_ASC, 1, 2, $itemCount);
+		$rows = $table->selectPaged(array(), TestTableMysqlMock::FIELD_KEY, DbTableAbstract::ORDER_ASC, 1, 2, $itemCount);
 
 		$this->assertEquals(4, $itemCount);
-		$rows = $rows + $table->selectPaged(array(), TestTableMysqlMock::FIELD_KEY, DbTable::ORDER_ASC, 2, 2, $itemCount);
+		$rows = $rows + $table->selectPaged(array(), TestTableMysqlMock::FIELD_KEY, DbTableAbstract::ORDER_ASC, 2, 2, $itemCount);
 
 		$expectedResult = array(
 			array(TestTableMysqlMock::FIELD_KEY => 'testKey1', TestTableMysqlMock::FIELD_VALUE => 'testValue1'),

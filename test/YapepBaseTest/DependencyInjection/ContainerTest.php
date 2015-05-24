@@ -16,7 +16,7 @@ use YapepBase\DependencyInjection\Container;
 use YapepBaseTest\Mock\DependencyInjection\ObjectMock;
 
 
-class ContainerTest extends \YapepBaseTest\BaseTest {
+class ContainerTest extends \YapepBaseTest\TestAbstract {
 
 	public function testSetWithString() {
 		$container = new Container();

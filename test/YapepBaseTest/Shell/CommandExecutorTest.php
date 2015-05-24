@@ -19,7 +19,7 @@ use YapepBase\Shell\CommandExecutor;
  * @package    YapepBaseTest
  * @subpackage Shell
  */
-class CommandExecutorTest extends \YapepBaseTest\BaseTest {
+class CommandExecutorTest extends \YapepBaseTest\TestAbstract {
 
 	/**
 	 * Tests the full command creation method.

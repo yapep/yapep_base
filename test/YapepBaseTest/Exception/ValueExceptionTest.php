@@ -11,7 +11,7 @@
 namespace YapepBaseTest\Exception;
 
 
-class ValueExceptionTest extends \YapepBaseTest\BaseTest {
+class ValueExceptionTest extends \YapepBaseTest\TestAbstract {
 	/**
 	 * Test an exception throw
 	 */

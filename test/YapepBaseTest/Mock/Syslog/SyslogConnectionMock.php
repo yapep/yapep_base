@@ -14,14 +14,14 @@ namespace YapepBaseTest\Mock\Syslog;
 use YapepBase\Exception\SyslogException;
 
 /**
- * Mock class for the SyslogConnection
+ * Mock class for the SyslogConnectionAbstract
  *
  * @codeCoverageIgnore
  *
  * @package    YapepBaseTest
  * @subpackage Mock\Syslog
  */
-class SyslogConnectionMock extends \YapepBase\Syslog\SyslogConnection {
+class SyslogConnectionMock extends \YapepBase\Syslog\SyslogConnectionAbstract {
 
 	/** Key to store the priority of the message. */
 	const MESSAGE_INDEX_PRIORITY = 'priority';

@@ -17,7 +17,7 @@ use YapepBase\Event\Event;
 use YapepBaseTest\Mock\Event\EventHandlerMock;
 
 
-class EventHandlerTest extends \YapepBaseTest\BaseTest {
+class EventHandlerTest extends \YapepBaseTest\TestAbstract {
 
 	public function testRegistration() {
 		$registry = new EventHandlerRegistry();

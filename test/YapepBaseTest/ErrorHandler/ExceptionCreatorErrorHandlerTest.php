@@ -17,7 +17,7 @@ use \ErrorException;
 /**
  * Test class for LoggingErrorHandler.
  */
-class ExceptionCreatorErrorHandlerTest extends \YapepBaseTest\BaseTest {
+class ExceptionCreatorErrorHandlerTest extends \YapepBaseTest\TestAbstract {
 
 	/**
 	 * The original ErrorReporting level before the test.

@@ -24,7 +24,7 @@ use YapepBase\Exception\ParameterException;
  * @package    YapepBaseTest
  * @subpackage BusinessObject
  */
-class BoAbstractTest extends \YapepBaseTest\BaseTest {
+class BoAbstractTest extends \YapepBaseTest\TestAbstract {
 
 	/**
 	 * @var \YapepBase\DependencyInjection\SystemContainer

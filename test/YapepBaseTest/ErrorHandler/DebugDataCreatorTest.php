@@ -18,7 +18,7 @@ use YapepBase\Exception\Exception;
 use YapepBaseTest\Mock\Storage\StorageMock;
 
 
-class DebugDataCreatorTest extends \YapepBaseTest\BaseTest {
+class DebugDataCreatorTest extends \YapepBaseTest\TestAbstract {
 
 	/**
 	 * @var StorageMock

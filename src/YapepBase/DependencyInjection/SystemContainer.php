@@ -14,7 +14,7 @@ namespace YapepBase\DependencyInjection;
 use YapepBase\Communication\CurlFactory;
 use YapepBase\Debugger\IDebugger;
 use YapepBase\File\FileHandlerPhp;
-use YapepBase\Database\DbConnection;
+use YapepBase\Database\DbConnectionAbstract;
 use YapepBase\DependencyInjection\Container;
 use YapepBase\ErrorHandler\ErrorHandlerRegistry;
 use YapepBase\Event\Event;
@@ -532,17 +532,17 @@ class SystemContainer extends Container {
 	}
 
 	/**
-	 * Returns a DbTable by it's database namespace and name. Optionally passes it the connection to use.
+	 * Returns a DbTableAbstract by it's database namespace and name. Optionally passes it the connection to use.
 	 *
 	 * Db tables must be in a <daoNamespace>\Table\<databaseNamespace>\<name>Table namespace structure.
 	 *
 	 * @param string                           $databaseNamespace   Namespace of the database.
 	 * @param string                           $name                Name of the table class.
-	 * @param \YapepBase\Database\DbConnection $connection          The connection to use.
+	 * @param \YapepBase\Database\DbConnectionAbstract $connection          The connection to use.
 	 *
-	 * @return \YapepBase\Database\DbTable
+	 * @return \YapepBase\Database\DbTableAbstract
 	 */
-	public function getDbTable($databaseNamespace, $name, DbConnection $connection = null) {
+	public function getDbTable($databaseNamespace, $name, DbConnectionAbstract $connection = null) {
 		$fullClassName = $this->searchForClass(self::NAMESPACE_SEARCH_DAO, 'Table\\' . $databaseNamespace
 			. '\\' . $name . 'Table');
 		return new $fullClassName($connection);

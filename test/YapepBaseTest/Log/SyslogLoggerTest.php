@@ -23,7 +23,7 @@ use YapepBaseTest\Mock\Syslog\SyslogConnectionMock;
  * @package    YapepBaseTest
  * @subpackage Log
  */
-class SyslogLoggerTest extends \YapepBaseTest\BaseTest {
+class SyslogLoggerTest extends \YapepBaseTest\TestAbstract {
 
 	/** The name of the config entry for the syslog connection. */
 	const SYSLOG_CONNECTION_CONFIG_NAME = 'test';

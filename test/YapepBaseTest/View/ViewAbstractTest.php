@@ -22,7 +22,7 @@ use YapepBaseTest\Mock\View\MockBlock;
  * @package    YapepBaseTest
  * @subpackage View
  */
-class ViewAbstractTest extends \YapepBaseTest\BaseTest {
+class ViewAbstractTest extends \YapepBaseTest\TestAbstract {
 
 	/**
 	 * The View Mock object.

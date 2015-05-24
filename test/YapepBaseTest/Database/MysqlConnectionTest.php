@@ -19,7 +19,7 @@ use YapepBaseTest\Mock\Database\PdoMock;
 /**
  * MysqlConnection test case.
  */
-class MysqlConnectionTest extends \YapepBaseTest\BaseTest {
+class MysqlConnectionTest extends \YapepBaseTest\TestAbstract {
 	/**
 	 * @var \YapepBase\Database\MysqlConnection
 	 */

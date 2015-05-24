@@ -22,7 +22,7 @@ use YapepBase\Util\Random;
  * @subpackage Test\Util
  * @covers \YapepBase\Util\Random
  */
-class RandomTest extends \YapepBaseTest\BaseTest {
+class RandomTest extends \YapepBaseTest\TestAbstract {
 
 	/**
 	 * Tests using the \mt_rand() function

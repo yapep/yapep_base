@@ -12,9 +12,9 @@ namespace YapepBaseTest\Batch;
 
 
 /**
- * Test class for LockingBatchScript.
+ * Test class for LockingBatchScriptAbstract.
  */
-class LockingBatchScriptTest extends \YapepBaseTest\BaseTest {
+class LockingBatchScriptTest extends \YapepBaseTest\TestAbstract {
 
 	public function testLock() {
 		$this->markTestIncomplete('Locking batch script tests are not implemented yet');

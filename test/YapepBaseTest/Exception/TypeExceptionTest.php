@@ -12,7 +12,7 @@ namespace YapepBaseTest\Exception;
 
 
 
-class TypeExceptionTest extends \YapepBaseTest\BaseTest {
+class TypeExceptionTest extends \YapepBaseTest\TestAbstract {
 	/**
 	 * Test throwing with a class
 	 */

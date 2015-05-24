@@ -18,7 +18,7 @@ use \PDO;
  * @package    YapepBase
  * @subpackage Database
  */
-class SqliteConnection extends DbConnection {
+class SqliteConnection extends DbConnectionAbstract {
 
 	/**
 	 * Opens the connection.

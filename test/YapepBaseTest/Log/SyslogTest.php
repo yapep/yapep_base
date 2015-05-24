@@ -20,7 +20,7 @@ use YapepBaseTest\Mock\Syslog\SyslogConnectionMock;
 /**
  * Test class for Syslog.
  */
-class SyslogTest extends \YapepBaseTest\BaseTest {
+class SyslogTest extends \YapepBaseTest\TestAbstract {
 
 	public function setUp() {
 		parent::setUp();

@@ -22,7 +22,7 @@ use YapepBaseTest\Mock\Response\ResponseMock;
 use YapepBaseTest\Mock\Storage\StorageMock;
 
 
-class SystemContainerTest extends \YapepBaseTest\BaseTest {
+class SystemContainerTest extends \YapepBaseTest\TestAbstract {
 
 	protected $originalObLevel;
 
@@ -76,7 +76,7 @@ class SystemContainerTest extends \YapepBaseTest\BaseTest {
 			$this->assertEquals(\YapepBase\Exception\ControllerException::ERR_CONTROLLER_NOT_FOUND, $e->getCode());
 		}
 		$sc->addSearchNamespace(SystemContainer::NAMESPACE_SEARCH_CONTROLLER, '\YapepBaseTest\Mock\Controller');
-		$this->assertInstanceOf('\YapepBase\Controller\BaseController', $sc->getController('Mock', $request, $response));
+		$this->assertInstanceOf('\YapepBase\Controller\ControllerAbstract', $sc->getController('Mock', $request, $response));
 	}
 
 	public function testGetTemplate() {

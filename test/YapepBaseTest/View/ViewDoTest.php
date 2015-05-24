@@ -22,7 +22,7 @@ use YapepBase\Mime\MimeType;
  * @package    YapepBaseTest
  * @subpackage View
  */
-class ViewDoTest extends \YapepBaseTest\BaseTest {
+class ViewDoTest extends \YapepBaseTest\TestAbstract {
 
 	/**
 	 * Thw View Data Object.

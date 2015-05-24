@@ -23,7 +23,7 @@ use YapepBaseTest\Mock\Response\OutputMock;
  * @package    YapepBaseTest
  * @subpackage Test\Controller
  */
-class ErrorControllerTest extends \YapepBaseTest\BaseTest {
+class ErrorControllerTest extends \YapepBaseTest\TestAbstract {
 
 	protected $originalObLevel;
 

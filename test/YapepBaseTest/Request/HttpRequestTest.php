@@ -19,7 +19,7 @@ use YapepBase\Request\HttpRequest;
  * @package    YapepBaseTest
  * @subpackage Test\Request
  */
-class HttpRequestTest extends \YapepBaseTest\BaseTest {
+class HttpRequestTest extends \YapepBaseTest\TestAbstract {
 
 	/**
 	 * The request

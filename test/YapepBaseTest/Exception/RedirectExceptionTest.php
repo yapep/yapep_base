@@ -13,7 +13,7 @@ namespace YapepBaseTest\Exception;
 use \YapepBase\Exception\RedirectException;
 
 
-class RedirectExceptionTest extends \YapepBaseTest\BaseTest {
+class RedirectExceptionTest extends \YapepBaseTest\TestAbstract {
 
 	/**
 	 * @covers \YapepBase\Exception\RedirectException

@@ -25,7 +25,7 @@ use YapepBaseTest\Mock\Request\RequestMock;
  * @package    YapepBaseTest
  * @subpackage subpackage
  */
-class LanguageArrayRouterTest extends \YapepBaseTest\BaseTest {
+class LanguageArrayRouterTest extends \YapepBaseTest\TestAbstract {
 
 	/**
 	 * Contains the usable languages.

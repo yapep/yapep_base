@@ -17,7 +17,7 @@ use YapepBase\Config;
 use YapepBaseTest\Mock\ErrorHandler\ErrorHandlerMock;
 
 
-class ErrorHandlerRegistryTest extends \YapepBaseTest\BaseTest {
+class ErrorHandlerRegistryTest extends \YapepBaseTest\TestAbstract {
 
 	protected $errorReportingLevel;
 

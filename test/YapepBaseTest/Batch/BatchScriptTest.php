@@ -19,12 +19,12 @@ use YapepBaseTest\Mock\ErrorHandler\ErrorHandlerMock;
 use YapepBaseTest\Mock\Event\EventHandlerMock;
 
 /**
- * Test for the BatchScript class
+ * Test for the BatchScriptAbstract class
  *
  * @package    YapepBaseTest
  * @subpackage Batch
  */
-class BatchScriptTest extends \YapepBaseTest\BaseTest {
+class BatchScriptTest extends \YapepBaseTest\TestAbstract {
 
 	/**
 	 * The error handler instance.

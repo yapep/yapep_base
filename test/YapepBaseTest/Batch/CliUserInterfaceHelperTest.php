@@ -19,7 +19,7 @@ use YapepBase\Exception\Exception;
  * @package    YapepBaseTest
  * @subpackage Batch
  */
-class CliUserInterfaceHelperTest extends \YapepBaseTest\BaseTest {
+class CliUserInterfaceHelperTest extends \YapepBaseTest\TestAbstract {
 
 
 	public function testOutput() {

@@ -13,7 +13,7 @@ namespace YapepBase\BusinessObject;
 
 use YapepBase\Application;
 use YapepBase\Config;
-use YapepBase\Database\DbConnection;
+use YapepBase\Database\DbConnectionAbstract;
 use YapepBase\Exception\ParameterException;
 
 /**
@@ -216,17 +216,17 @@ abstract class BoAbstract {
 	}
 
 	/**
-	 * Returns a DbTable by it's database namespace and name. Optionally passes it the connection to use.
+	 * Returns a DbTableAbstract by it's database namespace and name. Optionally passes it the connection to use.
 	 *
 	 * Db tables must be in a <daoNamespace>\Table\<databaseNamespace>\<name>Table namespace structure.
 	 *
 	 * @param string                           $databaseNamespace   Namespace of the database.
 	 * @param string                           $name                Name of the table class.
-	 * @param \YapepBase\Database\DbConnection $connection          The connection to use.
+	 * @param \YapepBase\Database\DbConnectionAbstract $connection          The connection to use.
 	 *
-	 * @return \YapepBase\Database\DbTable
+	 * @return \YapepBase\Database\DbTableAbstract
 	 */
-	protected function getTable($databaseNamespace, $name, DbConnection $connection = null) {
+	protected function getTable($databaseNamespace, $name, DbConnectionAbstract $connection = null) {
 		return Application::getInstance()->getDiContainer()->getDbTable($databaseNamespace, $name, $connection);
 	}
 

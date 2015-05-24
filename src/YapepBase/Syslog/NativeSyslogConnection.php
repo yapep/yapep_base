@@ -22,7 +22,7 @@ use YapepBase\Exception\SyslogException;
  * @package      YapepBase
  * @subpackage   Syslog
  */
-class NativeSyslogConnection extends SyslogConnection {
+class NativeSyslogConnection extends SyslogConnectionAbstract {
 
 	/**
 	 * Program identification string (tag)
