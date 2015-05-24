@@ -9,8 +9,6 @@
  */
 
 namespace YapepBase\Util;
-
-
 use YapepBase\Exception\Exception;
 
 /**

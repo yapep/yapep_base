@@ -112,10 +112,9 @@ class DbFactory {
 				'isPersistent',
 				'password',
 				'path',
-				'port',
 				'user',
 				'useTraditionalStrictMode',
-				'timezone',
+				'timezone'
 			);
 			$configData = array();
 			foreach ($properties as $property) {

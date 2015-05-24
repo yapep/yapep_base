@@ -189,6 +189,10 @@ abstract class LockingBatchScript extends BatchScript {
 			return false;
 		}
 		ftruncate($fp, 0);
+
+		// Every uer should be able to write and read the file, otherwise the first run of a script
+		// will determine every later run
+		chmod($pidFile, 0777);
 		if (function_exists('posix_getpid')) {
 			fwrite($fp, posix_getpid() . PHP_EOL);
 		}

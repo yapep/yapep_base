@@ -2,10 +2,10 @@
 /**
  * This file is part of YAPEPBase
  *
- * @package      YapepBase
- * @subpackage   Communication
- * @copyright    2011 The YAPEP Project All rights reserved.
- * @license      http://www.opensource.org/licenses/bsd-license.php BSD License
+ * @package    YapepBase
+ * @subpackage Communication
+ * @copyright  2011 The YAPEP Project All rights reserved.
+ * @license    http://www.opensource.org/licenses/bsd-license.php BSD License
  */
 
 
@@ -21,8 +21,6 @@ use YapepBase\Exception\CurlException;
  *
  * @package    YapepBase
  * @subpackage Communication
- *
- * @deprecated Will be removed in the next version, use the CurlHttpRequest class instead.
  */
 class CurlHttpWrapper {
 
@@ -32,10 +30,8 @@ class CurlHttpWrapper {
 	const METHOD_POST = 'POST';
 	/** PUT method */
 	const METHOD_PUT = 'PUT';
-	/** DELETE method */
-	const METHOD_DELETE = 'DELETE';
-	/** PATCH method */
-	const METHOD_PATCH = 'PATCH';
+	/** OPTIONS method */
+	const METHOD_OPTIONS = 'OPTIONS';
 
 	/**
 	 * The CURL connection resource
@@ -148,20 +144,7 @@ class CurlHttpWrapper {
 		switch ($method) {
 			case self::METHOD_GET:
 				$options[CURLOPT_HTTPGET] = true;
-				if (!empty($parameters)) {
-					$query = http_build_query($parameters);
-					$urlParts = parse_url($url);
-					if (false === $urlParts || empty($urlParts['scheme']) || empty($urlParts['host'])) {
-						throw new CurlException('Invalid URL: ' . $url);
-					}
-					$urlParts['query'] = empty($urlParts['query']) ? $query : $query . '&' . $urlParts['query'];
-
-					// Rebuild the URL. If we have pecl_http with http_build_url use it,
-					// otherwise use the PHP implementation.
-					$url = function_exists('http_build_url')
-						? http_build_url($urlParts)
-						: $this->buildUrl($urlParts);
-				}
+				$url = $this->addParametersToUrl($url, $parameters);
 				break;
 
 			case self::METHOD_POST:
@@ -180,9 +163,7 @@ class CurlHttpWrapper {
 				break;
 
 			case self::METHOD_PUT:
-			case self::METHOD_DELETE:
-			case self::METHOD_PATCH:
-				$options[CURLOPT_CUSTOMREQUEST] = $method;
+				$options[CURLOPT_CUSTOMREQUEST] = self::METHOD_PUT;
 				if (!$allowCustomPost) {
 					if (empty($parameters)) {
 						throw new CurlException('HTTP PUT request without parameters');
@@ -194,6 +175,11 @@ class CurlHttpWrapper {
 						$options[CURLOPT_POSTFIELDS] = $formattedParameters;
 					}
 				}
+				break;
+
+			case self::METHOD_OPTIONS:
+				$options[CURLOPT_CUSTOMREQUEST] = self::METHOD_OPTIONS;
+				$url = $this->addParametersToUrl($url, $parameters);
 				break;
 
 			default:
@@ -213,6 +199,35 @@ class CurlHttpWrapper {
 
 		$this->curl = curl_init($url);
 		curl_setopt_array($this->curl, $options);
+	}
+
+	/**
+	 * Adds the given parameters to the URL and returns it
+	 *
+	 * @param string $url          The base URL.
+	 * @param array  $parameters   Parameters to add.
+	 *
+	 * @throws \YapepBase\Exception\CurlException   If the given URL is invalid.
+	 *
+	 * @return string   The built URL.
+	 */
+	protected function addParametersToUrl($url, array $parameters) {
+		if (empty($parameters)) {
+			return $url;
+		}
+
+		$query = http_build_query($parameters);
+		$urlParts = parse_url($url);
+		if (false === $urlParts || empty($urlParts['scheme']) || empty($urlParts['host'])) {
+			throw new CurlException('Invalid URL: ' . $url);
+		}
+		$urlParts['query'] = empty($urlParts['query']) ? $query : $query . '&' . $urlParts['query'];
+
+		// Rebuild the URL. If we have pecl_http with http_build_url use it,
+		// otherwise use the PHP implementation.
+		return function_exists('http_build_url')
+			? http_build_url($urlParts)
+			: $this->buildUrl($urlParts);
 	}
 
 	/**
@@ -380,12 +395,11 @@ class CurlHttpWrapper {
 	}
 
 	/**
-	 * Returns the CURL error message for the request, if an error occured.
+	 * Returns the CURL error message for the request, if an error occurred.
 	 *
 	 * @return string
 	 */
 	public function getError() {
 		return $this->error;
 	}
-
 }

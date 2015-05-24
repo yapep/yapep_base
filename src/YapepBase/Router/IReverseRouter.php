@@ -28,7 +28,7 @@ interface IReverseRouter {
 	 *
 	 * @return string   The target.
 	 *
-	 * @throws \YapepBase\Exception\RouterException   On errors. (Includig if the route is not found)
+	 * @throws \YapepBase\Exception\RouterException   On errors. (Including if the route is not found)
 	 */
 	public function getTargetForControllerAction($controller, $action, $params = array());
 }

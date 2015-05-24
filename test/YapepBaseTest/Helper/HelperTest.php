@@ -16,18 +16,21 @@ use YapepBase\Application;
 use YapepBaseTest\Mock\Helper\HelperMock;
 use YapepBaseTest\Mock\I18n\TranslatorMock;
 
-
+/**
+ * Test class for helpers
+ *
+ * @package    YapepBase
+ * @subpackage Helper
+ */
 class HelperTest extends \YapepBaseTest\BaseTest {
 
 	protected function setUp() {
 		parent::setUp();
 		Application::getInstance()->setI18nTranslator(new TranslatorMock(
-			function($sourceClass, $string, $params, $language) {
+			function($string, $params) {
 				return json_encode(array(
-					'class'    => $sourceClass,
-					'string'   => $string,
-					'params'   => $params,
-					'language' => $language,
+					'string' => $string,
+					'params' => $params,
 				));
 			}
 		));
@@ -41,12 +44,10 @@ class HelperTest extends \YapepBaseTest\BaseTest {
 	public function testTranslation() {
 		$helper = new HelperMock();
 		$expectedResult = array(
-			'class' => 'YapepBaseTest\Mock\Helper\HelperMock',
 			'string' => 'test',
 			'params' => array('testParam' => 'testValue'),
-			'language' => 'en',
 		);
-		$this->assertSame($expectedResult, json_decode($helper->_('test', array('testParam' => 'testValue'), 'en'),
+		$this->assertSame($expectedResult, json_decode($helper->_('test', array('testParam' => 'testValue')),
 			true), 'The translator method does not return the expected result');
 	}
 

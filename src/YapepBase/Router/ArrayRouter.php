@@ -145,6 +145,18 @@ class ArrayRouter implements IRouter {
 			return false;
 		}
 
+		// If the rule is a regular expression
+		if (preg_match('/^#.*#[a-z]*$/i', $path)) {
+			$params = array();
+			if (preg_match($path, $target, $params)) {
+				$this->setParamsToRequest($params);
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
+
 		if ('[' == substr($path, 0, 1)) {
 			// This path is restricted to a method
 			list($pathMethod, $path) = explode(']', substr($path, 1), 2);
@@ -173,12 +185,8 @@ class ArrayRouter implements IRouter {
 				// The target doesn't match the path
 				return false;
 			}
-			foreach ($params as $name => $value) {
-				if (is_numeric($name)) {
-					continue;
-				}
-				$this->request->setParam($name, $value);
-			}
+
+			$this->setParamsToRequest($params);
 			return true;
 		} else {
 			if ($path == $target) {
@@ -205,7 +213,7 @@ class ArrayRouter implements IRouter {
 		}
 
 		$pathRegex = '/^' . preg_quote($path, '/') . '$/';
-		$params = array();
+
 		foreach ($matches as $match) {
 			switch ($match[2]) {
 				case 'alpha':
@@ -264,5 +272,19 @@ class ArrayRouter implements IRouter {
 	 */
 	public function getTargetForControllerAction($controller, $action, $params = array()) {
 		return $this->reverseRouter->getTargetForControllerAction($controller, $action, $params);
+	}
+
+	/**
+	 * Sets the given params to the Request.
+	 *
+	 * @param array $params   The params to request.
+	 */
+	protected function setParamsToRequest(array $params) {
+		foreach ($params as $name => $value) {
+			if (is_numeric($name)) {
+				continue;
+			}
+			$this->request->setParam($name, $value);
+		}
 	}
 }

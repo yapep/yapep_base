@@ -2,18 +2,18 @@
 /**
  * This file is part of YAPEPBase.
  *
- * @package      YapepBase
- * @subpackage   ErrorHandler
- * @copyright    2011 The YAPEP Project All rights reserved.
- * @license      http://www.opensource.org/licenses/bsd-license.php BSD License
+ * @package    YapepBase
+ * @subpackage ErrorHandler
+ * @copyright  2011 The YAPEP Project All rights reserved.
+ * @license    http://www.opensource.org/licenses/bsd-license.php BSD License
  */
 
 
 namespace YapepBase\ErrorHandler;
 
 
+use YapepBase\Application;
 use YapepBase\Storage\IStorage;
-use YapepBase\ErrorHandler\ErrorHandlerHelper;
 
 /**
  * Error handler that dumps debugging information to a specified storage.
@@ -137,35 +137,33 @@ class DebugDataCreator implements IErrorHandler  {
 	 */
 	protected function getDebugData($errorId, $errorMessage, array $backTrace = array(), array $context = array()) {
 		$debugData = $errorId . ' ' . $errorMessage . "\n\n";
+		$sessionData = Application::getInstance()->getDiContainer()->getSessionRegistry()->getAllData();
 
-		if (!empty($backTrace)) {
-			$debugData .= "----- Debug backtrace -----\n\n" . print_r($backTrace, true) . "\n\n";
-		}
-
-		if (!empty($context)) {
-			$debugData .= "----- Context -----\n\n" . print_r($context, true) . "\n\n";
-		}
-
-		if (!empty($_SERVER)) {
-			$debugData .= "----- Server -----\n\n" . print_r($_SERVER, true) . "\n\n";
-		}
-
-		if (!empty($_GET)) {
-			$debugData .= "----- Get -----\n\n" . print_r($_GET, true) . "\n\n";
-		}
-
-		if (!empty($_POST)) {
-			$debugData .= "----- Post -----\n\n" . print_r($_POST, true) . "\n\n";
-		}
-
-		if (!empty($_COOKIE)) {
-			$debugData .= "----- Cookie -----\n\n" . print_r($_COOKIE, true) . "\n\n";
-		}
-
-		if (!empty($_ENV)) {
-			$debugData .= "----- Env -----\n\n" . print_r($_ENV, true) . "\n\n";
-		}
+		$debugData .= $this->getRenderedDebugDataBlock('Debug backtrace', $backTrace);
+		$debugData .= $this->getRenderedDebugDataBlock('Context', $context);
+		$debugData .= $this->getRenderedDebugDataBlock('Server', $_SERVER);
+		$debugData .= $this->getRenderedDebugDataBlock('Get', $_GET);
+		$debugData .= $this->getRenderedDebugDataBlock('Post', $_POST);
+		$debugData .= $this->getRenderedDebugDataBlock('Cookie', $_COOKIE);
+		$debugData .= $this->getRenderedDebugDataBlock('Session', $sessionData);
+		$debugData .= $this->getRenderedDebugDataBlock('Env', $_ENV);
 
 		return $debugData;
+	}
+
+	/**
+	 * Renders a debug data block id the given data is not empty and returns it.
+	 *
+	 * @param string $blockName   Name of the block.
+	 * @param mixed  $data        Date to render.
+	 *
+	 * @return string
+	 */
+	protected function getRenderedDebugDataBlock($blockName, $data) {
+		if (!empty($data)) {
+			return "----- " . $blockName . " -----\n\n" . print_r($data, true) . "\n\n";
+		}
+
+		return '';
 	}
 }

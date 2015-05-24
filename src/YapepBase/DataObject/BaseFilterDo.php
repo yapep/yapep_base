@@ -160,23 +160,38 @@ class BaseFilterDo {
 		$reflectionClass = new \ReflectionClass($this);
 		$properties = $reflectionClass->getProperties();
 
-		$propertiesString = '';
+		$propertiesArray = array();
 		foreach ($properties as $reflectionProperty) {
 			try {
 				$reflectionProperty->setAccessible(true);
 				$name = $reflectionProperty->getName();
 				$value = $reflectionProperty->getValue($this);
 
+				if (
+					is_null($value)
+					|| $name == 'usableFields'
+					|| $value === array()
+				) {
+					continue;
+				}
+
 				if (is_array($value)) {
 					$value = implode('|', $value);
 				}
-				$propertiesString .= $name . '_' . $value . '_';
+				$propertiesArray[$name] = $value;
 			}
 			catch (\Exception $e) {
 				throw new \YapepBase\Exception\Exception($e->getMessage(), $e->getCode(), $e);
 			}
 		}
 
-		return $propertiesString;
+		ksort($propertiesArray);
+
+		$propertyStrings = array();
+		foreach ($propertiesArray as $name => $value) {
+			$propertyStrings[] = $name . '_' . $value;
+		}
+
+		return implode('_', $propertyStrings);
 	}
 }

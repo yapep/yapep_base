@@ -9,6 +9,8 @@
  */
 
 namespace YapepBase\Helper;
+
+
 use YapepBase\Application;
 use YapepBase\Config;
 use YapepBase\Shell\CommandExecutor;
@@ -19,7 +21,7 @@ use YapepBase\Shell\CommandExecutor;
  * @package    YapepBase
  * @subpackage Helper
  */
-class CommandOutputHelper {
+class CommandOutputHelper extends HelperAbstract {
 
 	/**
 	 * Runs the command and returns the command output and the separated STDERR in the outgoing parameter.

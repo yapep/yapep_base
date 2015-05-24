@@ -29,7 +29,7 @@ class MimeType {
 	const CSS = 'text/css';
 
 	/** Javascript content type. */
-	const JAVASCRIPT = 'appliation/javascript';
+	const JAVASCRIPT = 'application/javascript';
 
 	/** JSON content type. */
 	const JSON = 'application/json';

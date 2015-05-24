@@ -10,13 +10,14 @@
 
 namespace YapepBaseTest\Mock\I18n;
 
+
 use YapepBase\I18n\ITranslator;
 
 /**
  * Mock class for the ITranslator interface
  *
  * @package    YapepBaseTest
- * @subpackage Test\Mock\I18n
+ * @subpackage Mock\I18n
  */
 class TranslatorMock implements ITranslator {
 
@@ -43,7 +44,7 @@ class TranslatorMock implements ITranslator {
 	 */
 	function __construct(\Closure $translationMethod = null) {
 		if (is_null($translationMethod)) {
-			$translationMethod  = function($sourceClass, $string, $params, $language) {
+			$translationMethod  = function($string, $params) {
 				return $string;
 			};
 		}
@@ -53,31 +54,16 @@ class TranslatorMock implements ITranslator {
 	/**
 	 * Translates the string.
 	 *
-	 * @param string $sourceClass   The source class (with the namespace).
-	 * @param string $string        The string to translate.
-	 * @param array  $params        Associative array with parameters for the translation. The key is the param name.
-	 * @param string $language      The language for the translation. If not set, the default language will be used.
+	 * @param string $messageId   The string to translate.
+	 * @param array  $params      Associative array with parameters for the translation. The key is the param name.
 	 *
 	 * @return string
 	 *
-	 * @throws \YapepBase\Exception\I18n\DictionaryNotFoundException    If the dictionary is not found.
 	 * @throws \YapepBase\Exception\I18n\TranslationNotFoundException   If the error mode is set to exception.
 	 * @throws \YapepBase\Exception\I18n\ParameterException             If there are problems with the parameters.
 	 */
-	public function translate($sourceClass, $string, array $params = array(), $language = null) {
+	public function translate($messageId, array $params = array()) {
 		$translationMethod = $this->translationMethod;
-		return $translationMethod($sourceClass, $string, $params, $language);
+		return $translationMethod($messageId, $params);
 	}
-
-	/**
-	 * Sets the default language for the translator instance.
-	 *
-	 * @param string $language   The default language for the translations.
-	 *
-	 * @return void
-	 */
-	public function setDefaultLanguage($language) {
-		$this->defaultLanguage = $language;
-	}
-
 }

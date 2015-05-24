@@ -8,15 +8,12 @@
  * @license    http://www.opensource.org/licenses/bsd-license.php BSD License
  */
 
-
 namespace YapepBase\View;
 
 
 use YapepBase\Application;
 use YapepBase\Exception\Exception;
 use YapepBase\Storage\IStorage;
-use YapepBase\View\IHasLayout;
-use YapepBase\View\ViewDo;
 
 /**
  * ViewAbstract class what should be extended by every View class.
@@ -165,6 +162,24 @@ abstract class ViewAbstract {
 	}
 
 	/**
+	 * Returns a helper by it's name
+	 *
+	 * @param string $name     The name of the Helper class to return.
+	 *                         (Without the namespace and Helper suffix)
+	 * @param bool   $isView   If TRUE a View Helper will be returned, and a Common Helper otherwise
+	 *
+	 * @return \YapepBase\Helper\HelperAbstract
+	 */
+	protected function getHelper($helperName, $isView = true) {
+		if ($isView) {
+			return Application::getInstance()->getDiContainer()->getHelperForView($helperName);
+		}
+		else {
+			return Application::getInstance()->getDiContainer()->getHelper($helperName);
+		}
+	}
+
+	/**
 	 * Sets the view DO instance used by the view.
 	 *
 	 * @param \YapepBase\View\ViewDo $viewDo   The ViewDo instance to use.
@@ -256,14 +271,12 @@ abstract class ViewAbstract {
 	/**
 	 * Translates the specified string.
 	 *
-	 * @param string $string       The string.
+	 * @param string $messageId    The string.
 	 * @param array  $parameters   The parameters for the translation.
-	 * @param string $language     The language.
 	 *
 	 * @return string
 	 */
-	protected function _($string, $parameters = array(), $language = null) {
-		return Application::getInstance()->getI18nTranslator()->translate(get_class($this), $string, $parameters,
-			$language);
+	protected function _($messageId, $parameters = array()) {
+		return Application::getInstance()->getI18nTranslator()->translate($messageId, $parameters);
 	}
 }

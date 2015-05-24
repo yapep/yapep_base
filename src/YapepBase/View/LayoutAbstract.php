@@ -10,7 +10,6 @@
 
 namespace YapepBase\View;
 
-use YapepBase\View\ViewAbstract;
 
 /**
  * Layout for decorating the templates.
@@ -82,6 +81,13 @@ abstract class LayoutAbstract extends ViewAbstract {
 	protected $headerJavaScripts = array();
 
 	/**
+	 * Javascript variable declarations that should be set in the header.
+	 *
+	 * @var array
+	 */
+	protected $headerJavaScriptVariables = array();
+
+	/**
 	 * Javascript files which are should be included in the footer.
 	 *
 	 * @var array
@@ -89,6 +95,7 @@ abstract class LayoutAbstract extends ViewAbstract {
 	protected $footerJavaScripts = array();
 
 	/**
+	 * @todo Rename this to use proper camelCase [emul]
 	 * Javascript variable declarations that should be set in the footer.
 	 *
 	 * @var array
@@ -386,14 +393,30 @@ abstract class LayoutAbstract extends ViewAbstract {
 	 * @param string $value           The value of the variable. Must be a string that is the valid javascript
 	 *                                representation of the value.
 	 * @param bool   $treatAsString   If TRUE, the value will be treated as a string and placed within single quotes.
+	 * @param bool   $isHeader        If TRUE the variable will be set to the header place.
 	 *
 	 * @return void
 	 */
-	public function addJavaScriptVariable($name, $value, $treatAsString) {
+	public function addJavaScriptVariable($name, $value, $treatAsString, $isHeader = false) {
 		if ($treatAsString) {
 			$value = '\'' . $value . '\'';
 		}
-		$this->footerJavaScriptvariables[$name] = $value;
+
+		if ($isHeader) {
+			$this->headerJavaScriptVariables[$name] = $value;
+		}
+		else {
+			$this->footerJavaScriptvariables[$name] = $value;
+		}
+	}
+
+	/**
+	 * Displays the javascript variables in the footer.
+	 *
+	 * @return void
+	 */
+	protected function renderHeaderJavaScriptVariables() {
+		$this->renderJavascriptVariables($this->headerJavaScriptVariables);
 	}
 
 	/**
@@ -402,14 +425,26 @@ abstract class LayoutAbstract extends ViewAbstract {
 	 * @return void
 	 */
 	protected function renderFooterJavaScriptVariables() {
-		if (empty($this->footerJavaScriptvariables)) {
+		$this->renderJavascriptVariables($this->footerJavaScriptvariables);
+	}
+
+	/**
+	 * Renders the given variables in a <script> tag.
+	 *
+	 * @param array $variables
+	 *
+	 * @return void
+	 */
+	private function renderJavascriptVariables(array $variables) {
+		if (empty($variables)) {
 			return;
 		}
+
 		$result = '<script type="text/javascript">';
-		foreach ($this->footerJavaScriptvariables as $variableName => $value) {
+		foreach ($variables as $variableName => $value) {
 			$result .= 'var ' . $variableName . ' = ' . $value . ";\n";
 		}
-		echo $result . '</script>';;
+		echo $result . '</script>';
 	}
 
 	/**

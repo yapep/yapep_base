@@ -358,15 +358,13 @@ abstract class BatchScript implements ITerminatable {
 	/**
 	 * Translates the specified string.
 	 *
-	 * @param string $string       The string.
+	 * @param string $messageId    The string to translate.
 	 * @param array  $parameters   The parameters for the translation.
-	 * @param string $language     The language.
 	 *
 	 * @return string
 	 */
-	protected function _($string, $parameters = array(), $language = null) {
-		return Application::getInstance()->getI18nTranslator()->translate(get_class($this), $string, $parameters,
-			$language);
+	protected function _($messageId, $parameters = array()) {
+		return Application::getInstance()->getI18nTranslator()->translate($messageId, $parameters);
 	}
 
 	/**

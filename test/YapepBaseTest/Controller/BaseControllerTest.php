@@ -17,6 +17,7 @@ use YapepBase\Exception\RedirectException;
 use YapepBase\DependencyInjection\SystemContainer;
 use YapepBase\Application;
 
+use YapepBase\Response\HttpResponse;
 use YapepBaseTest\Mock\Controller\MockController;
 use YapepBaseTest\Mock\I18n\TranslatorMock;
 use YapepBaseTest\Mock\Request\RequestMock;
@@ -39,12 +40,10 @@ class BaseControllerTest extends \YapepBaseTest\BaseTest {
 			'\YapepBaseTest\Mock\Controller');
 		$application->setDiContainer($diContainer);
 		$application->setI18nTranslator(new TranslatorMock(
-			function($sourceClass, $string, $params, $language) {
+			function($string, $params) {
 				return json_encode(array(
-					'class'    => $sourceClass,
 					'string'   => $string,
 					'params'   => $params,
-					'language' => $language,
 				));
 			}
 		));
@@ -149,7 +148,7 @@ class BaseControllerTest extends \YapepBaseTest\BaseTest {
 	public function getController(&$response = null) {
 		$request      = new RequestMock('http://example.com/');
 		$output       = new OutputMock();
-		$response     = new \YapepBase\Response\HttpResponse($output);
+		$response     = new HttpResponse($output);
 		return new MockController($request, $response);
 	}
 
@@ -165,12 +164,13 @@ class BaseControllerTest extends \YapepBaseTest\BaseTest {
 	public function testTranslation() {
 		$controller = $this->getController();
 		$expectedResult = array(
-			'class' => 'YapepBaseTest\Mock\Controller\MockController',
 			'string' => 'test',
 			'params' => array('testParam' => 'testValue'),
-			'language' => 'en',
 		);
-		$this->assertSame($expectedResult, json_decode($controller->_('test', array('testParam' => 'testValue'), 'en'),
-			true), 'The translator method does not return the expected result');
+		$this->assertSame(
+			$expectedResult,
+			json_decode($controller->_('test', array('testParam' => 'testValue')), true),
+			'The translator method does not return the expected result'
+		);
 	}
 }

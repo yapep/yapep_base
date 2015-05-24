@@ -2,10 +2,10 @@
 /**
  * This file is part of YAPEPBase.
  *
- * @package      YapepBase
- * @subpackage   Validator
- * @copyright    2011 The YAPEP Project All rights reserved.
- * @license      http://www.opensource.org/licenses/bsd-license.php BSD License
+ * @package    YapepBase
+ * @subpackage Validator
+ * @copyright  2011 The YAPEP Project All rights reserved.
+ * @license    http://www.opensource.org/licenses/bsd-license.php BSD License
  */
 namespace YapepBase\Validator;
 
@@ -35,9 +35,7 @@ abstract class ValidatorAbstract {
 	 *
 	 * @return void.
 	 */
-	protected function checkString($value, $isEmptyAllowed = false,
-		$minLength = null, $maxLength = null, $regExp = null) {
-
+	public function checkString($value, $isEmptyAllowed = false, $minLength = null, $maxLength = null, $regExp = null) {
 		if (!$isEmptyAllowed && empty($value)) {
 			throw new ValidatorException(ValidatorException::EC_EMPTY);
 		}

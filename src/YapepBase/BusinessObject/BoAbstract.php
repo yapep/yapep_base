@@ -138,7 +138,7 @@ abstract class BoAbstract {
 		}
 
 		if (
-			// If we're not forced to store empty values, and the given values is emptys
+			// If we're not forced to store empty values, and the given values is empty
 			(!$forceEmptyStorage && empty($data))
 			// If we're forced to store empty values, we still wont store FALSE
 			|| ($forceEmptyStorage && $data === false)
@@ -167,15 +167,14 @@ abstract class BoAbstract {
 		// Get the stored keys
 		$keysStored = $this->getStorage()->get($this->getKeyForKeys());
 
-		// In case we have not stored any data yet, we do not need to delete anything
-		if (empty($keysStored)) {
-			return;
-		}
-
 		$keysToPurge = array();
 
 		// If the given key is empty we have to purge everything
 		if (empty($key)) {
+			// In case we have not stored any data yet, we do not need to delete anything
+			if (empty($keysStored)) {
+				return;
+			}
 			$keyPrefix = $this->getKeyPrefix();
 			foreach ($keysStored as $storedKey => $expire) {
 				$keysToPurge[] = $keyPrefix . $storedKey;
@@ -184,6 +183,11 @@ abstract class BoAbstract {
 		}
 		// If it ends with an asterix, purge all the keys beginning with the name
 		elseif ('.*' == substr($key, -2, 2)) {
+			// In case we have not stored any data yet, we do not need to delete anything
+			if (empty($keysStored)) {
+				return;
+			}
+
 			$keyPrefix = substr($key, 0, -1);
 
 			foreach ($keysStored as $storedKey => $expire) {
@@ -204,9 +208,9 @@ abstract class BoAbstract {
 
 		// Removing the data from the found keys
 		foreach ($keysToPurge as $keyToPurge) {
-
 			$this->getStorage()->delete($keyToPurge);
 		}
+
 		// Writing back the remaining keys
 		$this->getStorage()->set($this->getKeyForKeys(), $keysStored, self::CACHE_KEY_FOR_KEYS_TTL);
 	}
@@ -224,5 +228,17 @@ abstract class BoAbstract {
 	 */
 	protected function getTable($databaseNamespace, $name, DbConnection $connection = null) {
 		return Application::getInstance()->getDiContainer()->getDbTable($databaseNamespace, $name, $connection);
+	}
+
+	/**
+	 * Returns a common helper by it's name
+	 *
+	 * @param string $name   The name of the Helper class to return.
+	 *                       (Without the namespace and Helper suffix)
+	 *
+	 * @return \YapepBase\Helper\HelperAbstract
+	 */
+	protected function getHelper($helperName) {
+		return Application::getInstance()->getDiContainer()->getHelper($helperName);
 	}
 }

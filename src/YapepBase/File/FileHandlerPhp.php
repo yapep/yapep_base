@@ -45,6 +45,8 @@ class FileHandlerPhp implements IFileHandler {
 	/**
 	 * Makes a directory. Be aware that by default it is recursive.
 	 *
+	 * It wont fail if the directory is already there.
+	 *
 	 * @link http://php.net/manual/en/function.mkdir.php
 	 *
 	 * @param string $path          The directory or structure(in case of recursive mode) to create.
@@ -56,7 +58,10 @@ class FileHandlerPhp implements IFileHandler {
 	 * @throws \YapepBase\Exception\File\Exception   If the operation failed.
 	 */
 	public function makeDirectory($path, $mode = 0755, $isRecursive = true) {
-		if (!mkdir($path, $mode, $isRecursive)) {
+		// We swallow the possible warnings
+		// We only throw an Exception if the directory is not there
+		// This can be important in case of race conditions
+		if (!(@mkdir($path, $mode, $isRecursive)) && !$this->checkIsPathExists($path)) {
 			throw new Exception('Failed to create directory: ' . $path);
 		}
 
@@ -245,20 +250,28 @@ class FileHandlerPhp implements IFileHandler {
 	 * @param string $sourcePath          Path of the file to move.
 	 * @param string $destinationPath     Destination of the moved file.
 	 * @param bool   $checkIfIsUploaded   If TRUE it will move the file only if the file was uploaded through HTTP.
+	 * @param bool   $overwrite           If TRUE the destination will be overwritten.
 	 *
 	 * @throws \YapepBase\Exception\File\NotFoundException   If the source file is not found.
-	 * @throws \YapepBase\Exception\File\Exception   If the source file is not uploaded through HTTP and its checked
-	 *                                               or the move failed.
+	 * @throws \YapepBase\Exception\File\Exception           If the source file is not uploaded through HTTP and
+	 *                                                       its checked or the move failed,
+	 *                                                       or the destination exists and it can't be overwritten.
 	 *
 	 * @return void
 	 */
-	public function move($sourcePath, $destinationPath, $checkIfIsUploaded = false) {
+	public function move($sourcePath, $destinationPath, $checkIfIsUploaded = false, $overwrite = true) {
 		if (!$this->checkIsPathExists($sourcePath)) {
 			throw new NotFoundException($sourcePath, 'The source file is not found for a file move: ' . $sourcePath);
 		}
+
 		if ($checkIfIsUploaded && !is_uploaded_file($sourcePath)) {
 			throw new Exception('The given file is not uploaded through HTTP: ' . $sourcePath);
 		}
+
+		if (!$overwrite && $this->checkIsPathExists($destinationPath)) {
+			throw new Exception('The given destination already exists: ' . $destinationPath);
+		}
+
 		if (!rename($sourcePath, $destinationPath)) {
 			throw new Exception('Failed to move file from ' . $sourcePath . ' to ' . $destinationPath);
 		}
@@ -544,4 +557,24 @@ class FileHandlerPhp implements IFileHandler {
 	public function getBaseName($path, $suffix = null) {
 		return basename($path, $suffix);
 	}
+
+	/**
+	 * Changes the current working directory to the given one.
+	 *
+	 * @link http://php.net/manual/en/function.chdir.php
+	 *
+	 * @param string $path The path of the directory.
+	 *
+	 * @throws \YapepBase\Exception\File\NotFoundException   If the given path is not a valid directory.
+	 *
+	 * @return void
+	 */
+	public function changeWorkingDirectory($path) {
+		if (!$this->checkIsDirectory($path)) {
+			throw new Exception('Given path is not a directory "' . $path . '"');
+		}
+
+		chdir($path);
+	}
+
 }
