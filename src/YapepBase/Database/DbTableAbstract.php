@@ -10,8 +10,7 @@
 
 namespace YapepBase\Database;
 
-use YapepBase\Database\DbConnection;
-use YapepBase\Database\DbFactory;
+
 use YapepBase\Exception\ParameterException;
 
 /**
@@ -22,7 +21,7 @@ use YapepBase\Exception\ParameterException;
  * @package    YapepBase
  * @subpackage Database
  */
-abstract class DbTable {
+abstract class DbTableAbstract {
 	/** Constants for ascending order. */
 	const ORDER_ASC = 'asc';
 	/** Constants for descending order. */
@@ -38,7 +37,7 @@ abstract class DbTable {
 	/**
 	 * The connection what should be used for the queries (if you want to override the default connection).
 	 *
-	 * @var DbConnection
+	 * @var DbConnectionAbstract
 	 */
 	protected $dbConnection;
 
@@ -66,12 +65,12 @@ abstract class DbTable {
 	/**
 	 * Constructor
 	 *
-	 * @param DbConnection $dbConnection   The connection what should be used by the class.
+	 * @param DbConnectionAbstract $dbConnection   The connection what should be used by the class.
 	 *                                     If given, it will override the default connection.
 	 *                                     Be cautious! The given connection will be used for both reading
 	 *                                     and writing queries!
 	 */
-	public function __construct(DbConnection $dbConnection = null) {
+	public function __construct(DbConnectionAbstract $dbConnection = null) {
 		if ($dbConnection !== null) {
 			$this->dbConnection = $dbConnection;
 		}
@@ -92,7 +91,7 @@ abstract class DbTable {
 	 * @param string $type   The type of the query. Can be reading ({@link DbFactory::TYPE_READ_ONLY}),
 	 *                       writing ({@DbFactory Db::TYPE_READ_WRITE}).
 	 *
-	 * @return DbConnection
+	 * @return DbConnectionAbstract
 	 */
 	protected function getDbConnection($type) {
 		if ($this->dbConnection !== null) {
@@ -200,7 +199,7 @@ abstract class DbTable {
 	 *
 	 * @param array  $conditions   The conditions, the keys are the fields and the values are the values of the fields.
 	 * @param string $orderBy      The name of thee field, what should be used for ordering the result.
-	 * @param string $direction    The direction of the order ({@link DbTable::ORDER_ASC}, {@link DbTable::ORDER_DESC}).
+	 * @param string $direction    The direction of the order ({@link DbTableAbstract::ORDER_ASC}, {@link DbTableAbstract::ORDER_DESC}).
 	 * @param array  $params       This will hold the params what can be passed to the query.(Outgoing Param)
 	 * @param int    $limit        How may rows should be returned, if 0 or smaller number
 	 *                             all of the records will be returned.
@@ -277,7 +276,7 @@ abstract class DbTable {
 	 * @param array  $conditions   The conditions, the keys are the fields and the values are the values of the fields.
 	 *                             The value can be an array as well, where you can list the possible values for a field
 	 * @param string $orderBy      The name of thee field, what should be used for ordering the result.
-	 * @param string $direction    The direction of the order ({@link DbTable::ORDER_ASC}, {@link DbTable::ORDER_DESC}).
+	 * @param string $direction    The direction of the order ({@link DbTableAbstract::ORDER_ASC}, {@link DbTableAbstract::ORDER_DESC}).
 	 * @param int    $limit        Maximum how many rows should be returned.
 	 *
 	 * @return array   An array containing the rows.
@@ -304,7 +303,7 @@ abstract class DbTable {
 	 *
 	 * @param array  $conditions     The conditions, the keys are the fields and the values are the values.
 	 * @param string $orderBy        The name of thee field, what should be used for ordering the result.
-	 * @param string $direction      The direction of the order ({@link DbTable::ORDER_*}).
+	 * @param string $direction      The direction of the order ({@link DbTableAbstract::ORDER_*}).
 	 * @param int    $pageNumber     The number of the requested page (indexed from 1).
 	 * @param int    $itemsPerPage   How many rows should be returned at a time.
 	 * @param bool   &$itemCount     If its TRUE than the count of rows met the given conditions will be populated.
@@ -339,7 +338,7 @@ abstract class DbTable {
 	 *
 	 * @param array  $conditions   The conditions, the keys are the fields and the values are the values of the fields.
 	 * @param string $orderBy      The name of thee field, what should be used for ordering the result.
-	 * @param string $direction    The direction of the order ({@link DbTable::ORDER_ASC}, {@link DbTable::ORDER_DESC}).
+	 * @param string $direction    The direction of the order ({@link DbTableAbstract::ORDER_ASC}, {@link DbTableAbstract::ORDER_DESC}).
 	 *
 	 * @return array|bool   An associative array represents a record in the table,
 	 *                      or FALSE if there was not any row what met the conditions.

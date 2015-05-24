@@ -24,7 +24,7 @@ use YapepBaseTest\Mock\Request\RequestMock;
 use YapepBaseTest\Mock\Response\OutputMock;
 use YapepBaseTest\Mock\Response\ViewMock;
 
-class BaseControllerTest extends \YapepBaseTest\BaseTest {
+class ControllerAbstractTest extends \YapepBaseTest\TestAbstract {
 
 	protected $originalDiContainer;
 

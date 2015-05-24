@@ -25,7 +25,7 @@ use YapepBase\Exception\DatabaseException;
  * @package    YapepBase
  * @subpackage Database
  */
-abstract class DbConnection {
+abstract class DbConnectionAbstract {
 
 	/**
 	 * Stores the connection instance

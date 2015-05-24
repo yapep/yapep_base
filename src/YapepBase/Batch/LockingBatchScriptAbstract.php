@@ -41,7 +41,7 @@ use YapepBase\Exception\ParameterException;
  * @package    YapepBase
  * @subpackage Batch
  */
-abstract class LockingBatchScript extends BatchScript {
+abstract class LockingBatchScriptAbstract extends BatchScriptAbstract {
 	/**
 	 * The full path of the PID file.
 	 *

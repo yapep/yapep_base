@@ -11,7 +11,6 @@
 namespace YapepBase\Database;
 
 
-use YapepBase\Database\DbFactory;
 
 /**
  * Table describe base class for MySQL tables.
@@ -21,7 +20,7 @@ use YapepBase\Database\DbFactory;
  * @package    YapepBase
  * @subpackage Database
  */
-abstract class MysqlTable extends DbTable {
+abstract class MysqlTableAbstract extends DbTableAbstract {
 
 	/**
 	 * Returns the identifier of the query in a comment block.
@@ -276,7 +275,7 @@ abstract class MysqlTable extends DbTable {
 	 *
 	 * @param array  $conditions   The conditions, the keys are the fields and the values are the values of the fields.
 	 * @param string $orderBy      The name of the field, what should be used for ordering the result.
-	 * @param string $direction    The direction of the order ({@link DbTable::ORDER_ASC}, {@link DbTable::ORDER_DESC}).
+	 * @param string $direction    The direction of the order ({@link DbTableAbstract::ORDER_ASC}, {@link DbTableAbstract::ORDER_DESC}).
 	 * @param array  $params       This will hold the params what can be passed to the query.(Outgoing Param)
 	 * @param int    $limit        How may rows should be returned, if 0 or smaller number
 	 *                             all of the records will be returned.

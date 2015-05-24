@@ -20,7 +20,7 @@ use YapepBase\Exception\SyslogException;
  * @package      YapepBase
  * @subpackage   Syslog
  */
-abstract class SyslogConnection implements ISyslogConnection {
+abstract class SyslogConnectionAbstract implements ISyslogConnection {
 
    /**
 	 * Program identification string (tag)
@@ -133,7 +133,7 @@ abstract class SyslogConnection implements ISyslogConnection {
 	 *
 	 * @param string $ident   The application ident.
 	 *
-	 * @return \YapepBase\Syslog\SyslogConnection
+	 * @return \YapepBase\Syslog\SyslogConnectionAbstract
 	 */
 	public function setIdent($ident) {
 		$this->validateIdent($ident);
@@ -155,7 +155,7 @@ abstract class SyslogConnection implements ISyslogConnection {
 	 *
 	 * @param int $options   The options.
 	 *
-	 * @return \YapepBase\Syslog\SyslogConnection
+	 * @return \YapepBase\Syslog\SyslogConnectionAbstract
 	 */
 	public function setOptions($options) {
 		$this->options = (int)$options;
@@ -176,7 +176,7 @@ abstract class SyslogConnection implements ISyslogConnection {
 	 *
 	 * @param int $facility   The facility.
 	 *
-	 * @return \YapepBase\Syslog\SyslogConnection
+	 * @return \YapepBase\Syslog\SyslogConnectionAbstract
 	 *
 	 * @throws \YapepBase\Exception\ParameterException
 	 */

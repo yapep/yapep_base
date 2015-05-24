@@ -9,14 +9,14 @@
  */
 
 namespace YapepBase\Controller;
-use YapepBase\Application;
 
+
+use YapepBase\Application;
 use YapepBase\Response\HttpResponse;
 use YapepBase\Exception\ControllerException;
 use YapepBase\Request\HttpRequest;
 use YapepBase\Response\IResponse;
 use YapepBase\Request\IRequest;
-use YapepBase\Mime\MimeType;
 
 /**
  * Base class for HTTP controllers.
@@ -24,7 +24,7 @@ use YapepBase\Mime\MimeType;
  * @package    YapepBase
  * @subpackage Controller
  */
-abstract class HttpController extends BaseController {
+abstract class HttpControllerAbstract extends ControllerAbstract {
 
 	/**
 	 * The request instance

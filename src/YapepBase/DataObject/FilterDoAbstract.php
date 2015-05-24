@@ -16,7 +16,7 @@ use YapepBase\Exception\ParameterException;
  * @package    YapepBase
  * @subpackage DataObject
  */
-class BaseFilterDo {
+abstract class FilterDoAbstract {
 
 	/** @var array   Stores the list of the fields usable by the filter. */
 	protected $usableFields;

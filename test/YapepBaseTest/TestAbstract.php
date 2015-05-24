@@ -15,7 +15,7 @@ namespace YapepBaseTest;
  *
  * @package    YapepBaseTest
  */
-abstract class BaseTest extends \PHPUnit_Framework_TestCase {
+abstract class TestAbstract extends \PHPUnit_Framework_TestCase {
 
 	/**
 	 * Sets up the fixture, for example, open a network connection.

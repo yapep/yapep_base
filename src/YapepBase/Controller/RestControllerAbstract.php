@@ -10,6 +10,8 @@
 
 
 namespace YapepBase\Controller;
+
+
 use YapepBase\Config;
 use YapepBase\Exception\ControllerException;
 use YapepBase\View\RestTemplate;
@@ -25,7 +27,7 @@ use YapepBase\View\RestTemplate;
  * @package    YapepBase
  * @subpackage Controller
  */
-abstract class RestController extends HttpController {
+abstract class RestControllerAbstract extends HttpControllerAbstract {
 
 	/**
 	 * Returns the controller specific prefix

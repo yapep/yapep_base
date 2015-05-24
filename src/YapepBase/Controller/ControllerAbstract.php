@@ -9,6 +9,8 @@
  */
 
 namespace YapepBase\Controller;
+
+
 use YapepBase\Application;
 use YapepBase\Config;
 use YapepBase\Exception\RedirectException;
@@ -32,7 +34,7 @@ use YapepBase\View\ViewAbstract;
  * @package    YapepBase
  * @subpackage Controller
  */
-abstract class BaseController implements IController {
+abstract class ControllerAbstract implements IController {
 
 	/**
 	 * The request instance

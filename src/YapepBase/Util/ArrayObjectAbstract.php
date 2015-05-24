@@ -19,7 +19,7 @@ use YapepBase\Exception\IndexOutOfBoundsException;
  * @subpackage   Util
  * @internal
  */
-abstract class ArrayObject implements \Iterator, \ArrayAccess, \Countable, \Serializable {
+abstract class ArrayObjectAbstract implements \Iterator, \ArrayAccess, \Countable, \Serializable {
 
 	/**
 	 * Stores the collection elements
@@ -40,7 +40,7 @@ abstract class ArrayObject implements \Iterator, \ArrayAccess, \Countable, \Seri
 	abstract protected function keyCheck($offset);
 
 	/**
-	 * This function checks, if the ArrayObject subclass may contain the given type.
+	 * This function checks, if the ArrayObjectAbstract subclass may contain the given type.
 	 *
 	 * @param mixed $element   The element to check.
 	 *
@@ -262,7 +262,7 @@ abstract class ArrayObject implements \Iterator, \ArrayAccess, \Countable, \Seri
 	 *
 	 * @param mixed $element   The element.
 	 *
-	 * @return \YapepBase\Util\ArrayObject
+	 * @return \YapepBase\Util\ArrayObjectAbstract
 	 */
 	public function add($element) {
 		$this->typeCheck($element);
@@ -273,13 +273,13 @@ abstract class ArrayObject implements \Iterator, \ArrayAccess, \Countable, \Seri
 	/**
 	 * Add all elements from an other collection to this one.
 	 *
-	 * @param \YapepBase\Util\ArrayObject $collection   The collection.
+	 * @param \YapepBase\Util\ArrayObjectAbstract $collection   The collection.
 	 *
-	 * @return \YapepBase\Util\ArrayObject Returns this Collection in a consistent manner.
+	 * @return \YapepBase\Util\ArrayObjectAbstract Returns this Collection in a consistent manner.
 	 *
 	 * @throws \YapepBase\Exception\TypeException   If an element fails the typeCheck.
 	 */
-	public function addAll(ArrayObject $collection) {
+	public function addAll(ArrayObjectAbstract $collection) {
 		/**
 		 * Add a typecheck to return in a consistent manner, if it fails.
 		 */
@@ -313,13 +313,13 @@ abstract class ArrayObject implements \Iterator, \ArrayAccess, \Countable, \Seri
 	}
 
 	/**
-	 * Checks all elements in a Collection if they are contained in this ArrayObject.
+	 * Checks all elements in a Collection if they are contained in this ArrayObjectAbstract.
 	 *
-	 * @param \YapepBase\Util\ArrayObject $other   The other collection.
+	 * @param \YapepBase\Util\ArrayObjectAbstract $other   The other collection.
 	 *
 	 * @return bool
 	 */
-	public function containsAll(ArrayObject $other) {
+	public function containsAll(ArrayObjectAbstract $other) {
 		foreach ($other as $element) {
 			if (!$this->contains($element)) {
 				return false;
@@ -346,13 +346,13 @@ abstract class ArrayObject implements \Iterator, \ArrayAccess, \Countable, \Seri
 	}
 
 	/**
-	 * Remove all elements contained in an other ArrayObject
+	 * Remove all elements contained in an other ArrayObjectAbstract
 	 *
-	 * @param \YapepBase\Util\ArrayObject $other   The other object.
+	 * @param \YapepBase\Util\ArrayObjectAbstract $other   The other object.
 	 *
-	 * @return \YapepBase\Util\ArrayObject
+	 * @return \YapepBase\Util\ArrayObjectAbstract
 	 */
-	public function removeAll(ArrayObject $other) {
+	public function removeAll(ArrayObjectAbstract $other) {
 		foreach ($other as $elements) {
 			$this->remove($elements);
 		}
@@ -362,11 +362,11 @@ abstract class ArrayObject implements \Iterator, \ArrayAccess, \Countable, \Seri
 	/**
 	 * Retains all elements contained in a different collection
 	 *
-	 * @param \YapepBase\Util\ArrayObject $other   The other collection.
+	 * @param \YapepBase\Util\ArrayObjectAbstract $other   The other collection.
 	 *
-	 * @return \YapepBase\Util\ArrayObject
+	 * @return \YapepBase\Util\ArrayObjectAbstract
 	 */
-	public function retainAll(ArrayObject $other) {
+	public function retainAll(ArrayObjectAbstract $other) {
 		foreach ($this as $key => $value) {
 			if (!$other->contains($value)) {
 				unset($this[$key]);

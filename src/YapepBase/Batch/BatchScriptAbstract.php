@@ -32,7 +32,7 @@ use YapepBase\View\ViewDo;
  * @package    YapepBase
  * @subpackage Batch
  */
-abstract class BatchScript implements ITerminatable {
+abstract class BatchScriptAbstract implements ITerminatable {
 
 	/** Help usage. */
 	const HELP_USAGE = 'help';
