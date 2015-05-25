@@ -22,58 +22,57 @@ use YapepBaseTest\Mock\Autoloader\SimpleAutoloaderMock;
 class SimpleAutoloaderTest extends \YapepBaseTest\TestAbstract {
 
 	/**
-	 * The SimpleAutoloader object.
-	 *
 	 * @var SimpleAutoloaderMock
 	 */
 	protected $simpleAutoloader;
 
-	/**
-	 * Sets up the fixture, for example, opens a network connection.
-	 * This method is called before a test is executed.
-	 *
-	 * @return void
-	 */
+
 	protected function setUp() {
 		parent::setUp();
+
 		$this->simpleAutoloader = new SimpleAutoloaderMock();
 	}
 
 	/**
-	 * Tests the addClassPath() method.
-	 *
-	 * @return void
+	 * @covers SimpleAutoloader::addClassPath()
 	 */
-	public function testAddClassPath() {
-		$classPath = '/test/test1';
-		$classPath2 = '/test/test2';
+	public function testAddClassPathWithSingleValue_shouldBeRegistered() {
+		$classPath = '/test';
 		$this->simpleAutoloader->addClassPath($classPath);
-		$this->simpleAutoloader->addClassPath($classPath2 . '////');
 
 		$this->assertEquals($classPath, $this->simpleAutoloader->classPaths[0]);
-		$this->assertEquals($classPath2, $this->simpleAutoloader->classPaths[1]);
-
-		$classPathForNamespace = '/test/namespace';
-		$namespace = 'Test\\Test';
-
-		$this->simpleAutoloader->addClassPath($classPathForNamespace, $namespace);
-
-		$this->assertEquals($classPathForNamespace, $this->simpleAutoloader->classPathsWithNamespace[$namespace]);
 	}
 
 	/**
-	 * Tests the getPaths() method.
-	 *
-	 * @return void
+	 * @covers SimpleAutoloader::addClassPath()
 	 */
-	public function testGetPaths() {
+	public function testAddClassPathWithMultipleValues_shouldRegisterAll() {
+		$classPaths = array('/test1', '/test2');
+		$this->simpleAutoloader->addClassPath($classPaths);
+
+		$this->assertEquals($classPaths[0], $this->simpleAutoloader->classPaths[0]);
+		$this->assertEquals($classPaths[1], $this->simpleAutoloader->classPaths[1]);
+	}
+
+	/**
+	 * @covers SimpleAutoloader::addClassPath()
+	 */
+	public function testAddClassPathWithForcedNamespace_shouldRegisterToGivenNamespace() {
+		$classPath = '/test1';
+		$this->simpleAutoloader->addClassPath($classPath, '\\test');
+
+		$this->assertEquals($classPath, $this->simpleAutoloader->classPathsWithNamespace['test']);
+	}
+
+	/**
+	 * @covers SimpleAutoloader::getPaths()
+	 */
+	public function testGetPathsWhenNamespaceNotForced_shouldReturnEveryPossibleClassPath() {
 		$classPath1 = DIRECTORY_SEPARATOR . 'test' . DIRECTORY_SEPARATOR . 'path1';
 		$classPath2 = DIRECTORY_SEPARATOR . 'test' . DIRECTORY_SEPARATOR . 'path2' . DIRECTORY_SEPARATOR;
-		$classPath3 = DIRECTORY_SEPARATOR . 'test' . DIRECTORY_SEPARATOR . 'path3';
 
 		$this->simpleAutoloader->addClassPath($classPath1);
 		$this->simpleAutoloader->addClassPath($classPath2);
-		$this->simpleAutoloader->addClassPath($classPath3, '\Test\Namespaced');
 
 		$filePaths = $this->simpleAutoloader->getPaths('Test\TestClass');
 		$expectedResult = array(
@@ -84,40 +83,71 @@ class SimpleAutoloaderTest extends \YapepBaseTest\TestAbstract {
 		sort($expectedResult);
 
 		$this->assertEquals($expectedResult, $filePaths);
+	}
 
-		$filePaths = $this->simpleAutoloader->getPaths('Test\Namespaced\TestClass');
+	/**
+	 * @covers SimpleAutoloader::getPaths()
+	 */
+	public function testGetPathsWhenNamespaceForced_shouldReturnOnlyForcedPath() {
+		$classPath = DIRECTORY_SEPARATOR . 'test' . DIRECTORY_SEPARATOR . 'path1';
+		$forcedClassPath = DIRECTORY_SEPARATOR . 'test' . DIRECTORY_SEPARATOR . 'path2';
+
+		$this->simpleAutoloader->addClassPath($classPath);
+		$this->simpleAutoloader->addClassPath($forcedClassPath, '\Test\NamespaceForced');
+
+		$filePaths = $this->simpleAutoloader->getPaths('Test\NamespaceForced\TestClass');
 		$expectedResult = array(
-			$classPath3 . DIRECTORY_SEPARATOR . 'Test' . DIRECTORY_SEPARATOR . 'Namespaced'
+			$forcedClassPath . DIRECTORY_SEPARATOR . 'Test' . DIRECTORY_SEPARATOR . 'NamespaceForced'
 				. DIRECTORY_SEPARATOR . 'TestClass.php',
 		);
 
 		$this->assertSame($expectedResult, $filePaths,
-			'In case of the namespaced loading only files from the given directory should be loaded');
+			'In case of the NamespaceForced loading only files from the given directory should be loaded');
 	}
 
 	/**
-	 * Tests the loadClass() method.
-	 *
-	 * @return void
+	 * @covers SimpleAutoloader::getPaths()
 	 */
-	public function testLoadClass() {
-		$path = TEST_DIR . DIRECTORY_SEPARATOR
+	public function testLoadClassWithNonExistentFile_shouldReturnFalse() {
+		$className = '\\YapepBaseTest\\NonExistent';
+		$this->assertFalse(class_exists($className, false));
+		$result = $this->simpleAutoloader->loadClass('/nonExistent', $className);
+		$this->assertFalse($result);
+	}
+
+	/**
+	 * @covers SimpleAutoloader::getPaths()
+	 */
+	public function testLoadClassWithExistentClass_shouldReturnTrueAndLoadClass() {
+		$className = '\\YapepBaseTest\\TestData\\Autoloader\\Test\\AutoloaderTestClass';
+		$this->assertFalse(class_exists($className, false));
+
+		$result = $this->simpleAutoloader->loadClass($this->getTestClassPath('AutoloaderTestClass'), $className);
+
+		$this->assertTrue(class_exists($className, false));
+		$this->assertTrue($result);
+	}
+
+	/**
+	 * @covers SimpleAutoloader::getPaths()
+	 */
+	public function testLoadClassWithExistentInterface_shouldReturnTrueAndLoadInterface() {
+		$interfaceName = '\\YapepBaseTest\\TestData\\Autoloader\\Test\\IAutoloaderTestInterface';
+		$this->assertFalse(class_exists($interfaceName, false));
+
+		$result = $this->simpleAutoloader->loadClass($this->getTestClassPath('IAutoloaderTestInterface'), $interfaceName);
+
+		$this->assertTrue(interface_exists($interfaceName, false));
+		$this->assertTrue($result);
+	}
+
+
+	protected function getTestClassPath($className) {
+		return TEST_DIR . DIRECTORY_SEPARATOR
 			. 'YapepBaseTest' . DIRECTORY_SEPARATOR
 			. 'TestData' . DIRECTORY_SEPARATOR
 			. 'Autoloader' . DIRECTORY_SEPARATOR
-			. 'Test' . DIRECTORY_SEPARATOR;
-
-		// Check a class
-		$classPath = $path . 'AutoloaderTestClass.php';
-		$this->assertFalse(class_exists('\\YapepBaseTest\\TestData\\Autoloader\\Test\\AutoloaderTestClass', false));
-		$this->simpleAutoloader->loadClass($classPath, '\\YapepBase\\TestData\\Autoloader\\Test\\AutoloaderTestClass');
-		$this->assertTrue(class_exists('\\YapepBaseTest\\TestData\\Autoloader\\Test\\AutoloaderTestClass', false));
-
-		// Check in Interface
-		$interfacePath = $path . 'IAutoloaderTestInterface.php';
-		$this->assertFalse(interface_exists('\\YapepBase\\TestData\\Autoloader\\Test\\IAutoloaderTestInterface', false));
-		$this->simpleAutoloader->loadClass($interfacePath,
-			'\\YapepBase\\TestData\\Autoloader\\Test\\IAutoloaderTestInterface');
-		$this->assertTrue(interface_exists('\\YapepBaseTest\\TestData\\Autoloader\\Test\\IAutoloaderTestInterface', false));
+			. 'Test' . DIRECTORY_SEPARATOR
+			. $className . '.php';
 	}
 }

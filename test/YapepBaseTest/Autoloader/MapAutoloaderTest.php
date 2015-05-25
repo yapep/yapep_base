@@ -20,35 +20,44 @@ use YapepBase\Autoloader\MapAutoloader;
  * @subpackage Autoloader
  */
 class MapAutoloaderTest extends \YapepBaseTest\TestAbstract {
-	/**
-	 * Tests the loadClass() method.
-	 *
-	 * @return void
-	 */
-	public function testLoad() {
-		$path = TEST_DIR . DIRECTORY_SEPARATOR
-			. 'YapepBaseTest' . DIRECTORY_SEPARATOR
-			. 'TestData' . DIRECTORY_SEPARATOR
-			. 'Autoloader' . DIRECTORY_SEPARATOR
-			. 'Test' . DIRECTORY_SEPARATOR;
 
-		$classPath = $path . 'MapAutoloaderTestClass.php';
-		$interfacePath = $path . 'IMapAutoloaderTestInterface.php';
-		$classMap = array(
-			'MapAutoloaderTestClass'      => $classPath,
-			'IMapAutoloaderTestInterface' => $interfacePath,
-		);
+	/**
+	 * @covers MapAutoloader::load()
+	 */
+	public function testLoadWhenClassGiven_shouldLoadItBasedOnTheGivenMap() {
+		$className = 'MapAutoloaderTestClass';
+		$classMap = array($className => $this->getPath($className));
 
 		$autoloader = new MapAutoloader($classMap);
 
-		// Check a class
 		$this->assertFalse(class_exists('MapAutoloaderTestClass', false));
 		$autoloader->load('MapAutoloaderTestClass');
+
 		$this->assertTrue(class_exists('MapAutoloaderTestClass', false));
+	}
+
+	/**
+	 * @covers MapAutoloader::load()
+	 */
+	public function testLoadWhenInterfaceGiven_shouldLoadItBasedOnTheGivenMap() {
+		$interfaceName = 'IMapAutoloaderTestInterface';
+		$classMap = array($interfaceName => $this->getPath($interfaceName));
+
+		$autoloader = new MapAutoloader($classMap);
 
 		// Check in Interface
 		$this->assertFalse(interface_exists('IMapAutoloaderTestInterface', false));
 		$autoloader->load('IMapAutoloaderTestInterface');
 		$this->assertTrue(interface_exists('IMapAutoloaderTestInterface', false));
+	}
+
+
+	protected function getPath($className) {
+		return TEST_DIR . DIRECTORY_SEPARATOR
+			. 'YapepBaseTest' . DIRECTORY_SEPARATOR
+			. 'TestData' . DIRECTORY_SEPARATOR
+			. 'Autoloader' . DIRECTORY_SEPARATOR
+			. 'Test' . DIRECTORY_SEPARATOR
+			. $className . '.php';
 	}
 }

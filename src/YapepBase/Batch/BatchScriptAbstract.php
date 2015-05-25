@@ -162,7 +162,6 @@ abstract class BatchScriptAbstract implements ITerminatable {
 		$container[SystemContainer::KEY_VIEW_DO] = $container->share(function($container) {
 			return new ViewDo(MimeType::PLAINTEXT);
 		});
-
 	}
 
 	/**
@@ -173,7 +172,6 @@ abstract class BatchScriptAbstract implements ITerminatable {
 	 * @return void
 	 */
 	protected function runAfter() {
-		// noop
 	}
 
 	/**

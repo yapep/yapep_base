@@ -11,8 +11,10 @@
 namespace YapepBaseTest\Autoloader;
 
 
+use Mockery;
+
 use YapepBaseTest\Mock\Autoloader\AutoloaderRegistryMock;
-use YapepBaseTest\Mock\Autoloader\AutoloaderMock;
+
 
 /**
  * Test class for AutoloaderRegistry.
@@ -23,94 +25,86 @@ use YapepBaseTest\Mock\Autoloader\AutoloaderMock;
 class AutoloaderRegistryTest extends \YapepBaseTest\TestAbstract {
 
 	/**
-	 * The autoloader registry object.
-	 *
 	 * @var AutoloaderRegistryMock
 	 */
 	protected $autoloaderRegistry;
 
-	/**
-	 * Sets up the fixture, for example, open a network connection.
-	 * This method is called before a test is executed.
-	 *
-	 * @return void
-	 */
+
 	public function setUp() {
 		parent::setUp();
+
 		$this->autoloaderRegistry = new AutoloaderRegistryMock();
 	}
 
 	/**
-	 * Tests the addAutoloader() method.
-	 *
-	 * @return void
+	 * @covers AutoloaderRegistry::addAutoloader()
 	 */
-	public function testAddAutoloader() {
-		$autoloader1 = new AutoloaderMock(1);
-		$autoloader2 = new AutoloaderMock(2);
+	public function testAddAutoloader_theGivenAutoloaderShouldBeRegisteredAtTheEnd() {
+		$autoloader = $this->getAutoloader();
+		$autoloader->isFirst = true;
 
-		$this->autoloaderRegistry->addAutoloader($autoloader1);
-		$this->autoloaderRegistry->addAutoloader($autoloader2);
+		$this->autoloaderRegistry->addAutoloader($autoloader);
+		$this->autoloaderRegistry->addAutoloader($this->getAutoloader());
 
-		$this->assertEquals($autoloader1, $this->autoloaderRegistry->registeredAutoloaders[0]);
-		$this->assertEquals($autoloader2, $this->autoloaderRegistry->registeredAutoloaders[1]);
+		$this->assertObjectHasAttribute('isFirst', $this->autoloaderRegistry->registeredAutoloaders[0]);
+		$this->assertObjectNotHasAttribute('isFirst', $this->autoloaderRegistry->registeredAutoloaders[1]);
 	}
 
 	/**
-	 * Tests the prependAutoloader() method.
-	 *
-	 * @return void
+	 * @covers AutoloaderRegistry::prependAutoloader()
 	 */
-	public function testPrependAutoloader() {
-		$autoloader1 = new AutoloaderMock(1);
-		$autoloader2 = new AutoloaderMock(2);
-		$autoloader3 = new AutoloaderMock(3);
+	public function testPrependAutoloader_shouldRegisterTheAutoloaderAtTheVeryBeginning() {
+		$autoloader = $this->getAutoloader();
+		$autoloader->isFirst = true;
 
-		$this->autoloaderRegistry->addAutoloader($autoloader1);
-		$this->autoloaderRegistry->addAutoloader($autoloader2);
-		$this->autoloaderRegistry->prependAutoloader($autoloader3);
+		$this->autoloaderRegistry->addAutoloader($this->getAutoloader());
+		$this->autoloaderRegistry->prependAutoloader($autoloader);
 
-		$this->assertEquals($autoloader3, $this->autoloaderRegistry->registeredAutoloaders[0]);
-		$this->assertEquals($autoloader1, $this->autoloaderRegistry->registeredAutoloaders[1]);
-		$this->assertEquals($autoloader2, $this->autoloaderRegistry->registeredAutoloaders[2]);
+		$this->assertObjectHasAttribute('isFirst', $this->autoloaderRegistry->registeredAutoloaders[0]);
+		$this->assertObjectNotHasAttribute('isFirst', $this->autoloaderRegistry->registeredAutoloaders[1]);
 	}
 
 	/**
-	 * Tests the clear() method.
-	 *
-	 * @return void
+	 * @covers AutoloaderRegistry::clear()
 	 */
-	public function testClear() {
-		$autoloader1 = new AutoloaderMock(1);
-		$autoloader2 = new AutoloaderMock(2);
+	public function testClear_shouldRemoveRegisteredAutoloaders() {
+		$this->autoloaderRegistry->addAutoloader($this->getAutoloader());
 
-		$this->autoloaderRegistry->addAutoloader($autoloader1);
-		$this->autoloaderRegistry->addAutoloader($autoloader2);
 		$this->autoloaderRegistry->clear();
 
 		$this->assertEmpty($this->autoloaderRegistry->registeredAutoloaders);
 	}
 
 	/**
-	 * Tests the load() method.
-	 *
-	 * @return void
+	 * @covers AutoloaderRegistry::clear()
 	 */
-	public function testLoad() {
-		$autoloaderFail = new AutoloaderMock(1, false);
-		$autoloaderSuccess = new AutoloaderMock(2, true);
+	public function testLoad_shouldFallbackToNextLoaderIfFirstFails() {
+		$className = 'testClass';
 
-		$this->autoloaderRegistry->addAutoloader($autoloaderFail);
-		$this->autoloaderRegistry->addAutoloader($autoloaderSuccess);
+		$this->autoloaderRegistry->addAutoloader($this->getAutoloaderAndExpectLoad($className, false));
+		$this->autoloaderRegistry->addAutoloader($this->getAutoloaderAndExpectLoad($className, true));
 
-		$className1 = 'class1';
-		$className2 = 'class2';
-		$result1 = $this->autoloaderRegistry->load($className1);
-		$result2 = $this->autoloaderRegistry->load($className2);
+		$result = $this->autoloaderRegistry->load($className);
 
-		$this->assertTrue($result1);
-		$this->assertTrue($result2);
-		$this->assertEmpty($autoloaderFail->loadedClasses);
-		$this->assertEquals(array($className1, $className2), $autoloaderSuccess->loadedClasses);
+		$this->assertTrue($result);
+	}
+
+	/**
+	 * @return \YapepBase\Autoloader\IAutoloader
+	 */
+	protected function getAutoloader() {
+		return Mockery::mock('\YapepBase\Autoloader\IAutoloader');
+	}
+
+	/**
+	 * @return \Mockery\MockInterface
+	 */
+	protected function getAutoloaderAndExpectLoad($className, $expectedResult) {
+		return Mockery::mock('\YapepBase\Autoloader\IAutoloader')
+			->shouldReceive('load')
+				->once()
+				->with($className)
+				->andReturn($expectedResult)
+				->getMock();
 	}
 }

@@ -41,7 +41,7 @@ class BatchScriptTest extends \YapepBaseTest\TestAbstract {
 	protected $eventHandler;
 
 	/**
-	 * The orignal DI container
+	 * The original DI container
 	 *
 	 * @var \YapepBase\DependencyInjection\SystemContainer
 	 */
