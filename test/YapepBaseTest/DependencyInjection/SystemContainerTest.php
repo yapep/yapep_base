@@ -14,6 +14,8 @@ namespace YapepBaseTest\DependencyInjection;
 use YapepBase\Config;
 use YapepBase\DependencyInjection\SystemContainer;
 
+use YapepBase\Mime\MimeType;
+use YapepBase\View\ViewDo;
 use YapepBaseTest\Mock\Debugger\DebuggerMock;
 use YapepBaseTest\Mock\File\ResourceHandlerMock;
 use YapepBaseTest\Mock\Request\RequestMock;

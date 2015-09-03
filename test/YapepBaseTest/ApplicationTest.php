@@ -41,11 +41,11 @@ class ApplicationTest extends \YapepBaseTest\TestAbstract {
 		parent::setUp();
 		$this->previousApplication = \YapepBase\Application::getInstance();
 		$this->object = new Mock\ApplicationMock;
-		\YapepBase\Application::setInstance($this->object);
+		Application::setInstance($this->object);
 	}
 
 	protected function tearDown() {
-		\YapepBase\Application::setInstance($this->previousApplication);
+		Application::setInstance($this->previousApplication);
 	}
 
 	public function testTest() {

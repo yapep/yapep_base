@@ -215,20 +215,6 @@ abstract class BoAbstract {
 		$this->getStorage()->set($this->getKeyForKeys(), $keysStored, self::CACHE_KEY_FOR_KEYS_TTL);
 	}
 
-	/**
-	 * Returns a DbTableAbstract by it's database namespace and name. Optionally passes it the connection to use.
-	 *
-	 * Db tables must be in a <daoNamespace>\Table\<databaseNamespace>\<name>Table namespace structure.
-	 *
-	 * @param string                           $databaseNamespace   Namespace of the database.
-	 * @param string                           $name                Name of the table class.
-	 * @param \YapepBase\Database\DbConnectionAbstract $connection          The connection to use.
-	 *
-	 * @return \YapepBase\Database\DbTableAbstract
-	 */
-	protected function getTable($databaseNamespace, $name, DbConnectionAbstract $connection = null) {
-		return Application::getInstance()->getDiContainer()->getDbTable($databaseNamespace, $name, $connection);
-	}
 
 	/**
 	 * Returns a common helper by it's name

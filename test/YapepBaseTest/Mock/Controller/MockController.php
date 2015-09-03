@@ -16,6 +16,17 @@ namespace YapepBaseTest\Mock\Controller;
 class MockController extends \YapepBase\Controller\ControllerAbstract {
 
 	/**
+	 * @var \YapepBase\Request\IRequest;
+	 */
+	public $request;
+
+	/**
+	 * @var \YapepBase\Response\IResponse
+	 */
+	public $response;
+
+
+	/**
 	 * Set to true on every action run.
 	 *
 	 * @var bool

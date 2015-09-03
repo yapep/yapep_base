@@ -2,10 +2,10 @@
 /**
  * This file is part of YAPEPBase.
  *
- * @package      YapepBaseTest
- * @subpackage   Controller
- * @copyright    2011 The YAPEP Project All rights reserved.
- * @license      http://www.opensource.org/licenses/bsd-license.php BSD License
+ * @package    YapepBaseTest
+ * @subpackage Controller
+ * @copyright  2011 The YAPEP Project All rights reserved.
+ * @license    http://www.opensource.org/licenses/bsd-license.php BSD License
  */
 
 namespace YapepBaseTest\Controller;
@@ -24,6 +24,12 @@ use YapepBaseTest\Mock\Request\RequestMock;
 use YapepBaseTest\Mock\Response\OutputMock;
 use YapepBaseTest\Mock\Response\ViewMock;
 
+/**
+ * Test class for ControllerAbstract
+ *
+ * @package    YapepBaseTest
+ * @subpackage Controller
+ */
 class ControllerAbstractTest extends \YapepBaseTest\TestAbstract {
 
 	protected $originalDiContainer;
@@ -58,6 +64,10 @@ class ControllerAbstractTest extends \YapepBaseTest\TestAbstract {
 		while (ob_get_level() > $this->originalObLevel) {
 			ob_end_flush();
 		}
+	}
+
+	public function testConstruct_shouldStoreGivenObjectsAndClearViewDo() {
+
 	}
 
 
