@@ -1,0 +1,8 @@
+services:
+    yapepBase.random:
+        class: YapepBase\Util\Random
+        tags: [{name: yapepBase.skipAutoResolver}]
+
+    yapepBase.csvParser:
+        class: YapepBase\Util\CsvParser
+        tags: [{name: yapepBase.skipAutoResolver}]

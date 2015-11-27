@@ -11,7 +11,6 @@
 namespace YapepBase\Storage;
 
 
-use YapepBase\Application;
 use YapepBase\Debugger\Item\StorageItem;
 
 /**
@@ -33,13 +32,6 @@ use YapepBase\Debugger\Item\StorageItem;
 class DummyStorage extends StorageAbstract {
 
 	/**
-	 * If TRUE, no debug items are created by this storage.
-	 *
-	 * @var bool
-	 */
-	protected $debuggerDisabled;
-
-	/**
 	 * Stores data the specified key
 	 *
 	 * @param string $key    The key to be used to store the data.
@@ -49,13 +41,7 @@ class DummyStorage extends StorageAbstract {
 	 * @return void
 	 */
 	public function set($key, $data, $ttl = 0) {
-		$debugger = Application::getInstance()->getDiContainer()->getDebugger();
-
-		// If we have a debugger, we have to log the query
-		if (!$this->debuggerDisabled && $debugger !== false) {
-			$debugger->addItem(new StorageItem('dummy', 'dummy.' . $this->currentConfigurationName,
-				StorageItem::METHOD_SET . ' ' . $key . ' for ' . $ttl, $data, 0));
-		}
+		$this->addDebugItem('dummy', StorageItem::METHOD_SET . ' ' . $key . ' for ' . $ttl, $data, 0);
 	}
 
 	/**
@@ -66,13 +52,7 @@ class DummyStorage extends StorageAbstract {
 	 * @return mixed   The data or FALSE if the specified key does not exist.
 	 */
 	public function get($key) {
-		$debugger = Application::getInstance()->getDiContainer()->getDebugger();
-
-		// If we have a debugger, we have to log the query
-		if (!$this->debuggerDisabled && $debugger !== false) {
-			$debugger->addItem(new StorageItem('dummy', 'dummy.' . $this->currentConfigurationName,
-				StorageItem::METHOD_GET . ' ' . $key, false, 0));
-		}
+		$this->addDebugItem('dummy', StorageItem::METHOD_GET . ' ' . $key, false, 0);
 
 		return false;
 	}
@@ -87,13 +67,7 @@ class DummyStorage extends StorageAbstract {
 	 * @throws \YapepBase\Exception\StorageException      On error.
 	 */
 	public function delete($key) {
-		$debugger = Application::getInstance()->getDiContainer()->getDebugger();
-
-		// If we have a debugger, we have to log the query
-		if (!$this->debuggerDisabled && $debugger !== false) {
-			$debugger->addItem(new StorageItem('dummy', 'dummy.' . $this->currentConfigurationName,
-				StorageItem::METHOD_DELETE . ' ' . $key, null, 0));
-		}
+		$this->addDebugItem('dummy', StorageItem::METHOD_DELETE . ' ' . $key, null, 0);
 	}
 
 	/**
@@ -102,13 +76,7 @@ class DummyStorage extends StorageAbstract {
 	 * @return mixed
 	 */
 	public function clear() {
-		$debugger = Application::getInstance()->getDiContainer()->getDebugger();
-
-		// If we have a debugger, we have to log the query
-		if (!$this->debuggerDisabled && $debugger !== false) {
-			$debugger->addItem(new StorageItem('dummy', 'dummy.' . $this->currentConfigurationName,
-				StorageItem::METHOD_CLEAR, null, 0));
-		}
+		$this->addDebugItem('dummy', StorageItem::METHOD_CLEAR, null, 0);
 	}
 
 	/**
@@ -147,17 +115,6 @@ class DummyStorage extends StorageAbstract {
 	 */
 	protected function getConfigProperties() {
 		return array('debuggerDisabled');
-	}
-
-	/**
-	 * Sets up the backend.
-	 *
-	 * @param array $config   The configuration data for the backend.
-	 *
-	 * @return void
-	 */
-	protected function setupConfig(array $config) {
-		$this->debuggerDisabled = isset($config['debuggerDisabled']) ? (bool)$config['debuggerDisabled'] : false;
 	}
 
 	/**

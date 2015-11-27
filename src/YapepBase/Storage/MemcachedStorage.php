@@ -93,13 +93,6 @@ class MemcachedStorage extends StorageAbstract implements IIncrementable {
 	protected $readOnly = false;
 
 	/**
-	 * If TRUE, no debug items are created by this storage.
-	 *
-	 * @var bool
-	 */
-	protected $debuggerDisabled;
-
-	/**
 	 * Returns the config properties(last part of the key) used by the class.
 	 *
 	 * @return array
@@ -136,8 +129,8 @@ class MemcachedStorage extends StorageAbstract implements IIncrementable {
 		$this->keySuffix        = empty($config['keySuffix'])        ? ''    : $config['keySuffix'];
 		$this->hashKey          = empty($config['hashKey'])          ? false : (bool)$config['hashKey'];
 		$this->readOnly         = empty($config['readOnly'])         ? false : (bool)$config['readOnly'];
-		$this->debuggerDisabled = empty($config['debuggerDisabled']) ? false : (bool)$config['debuggerDisabled'];
 
+		// FIXME fix this
 		$this->memcache = Application::getInstance()->getDiContainer()->getMemcached();
 		$serverList = $this->memcache->getServerList();
 		if (empty($serverList)) {
@@ -176,7 +169,6 @@ class MemcachedStorage extends StorageAbstract implements IIncrementable {
 		if ($this->readOnly) {
 			throw new StorageException('Trying to write to a read only storage');
 		}
-		$debugger = Application::getInstance()->getDiContainer()->getDebugger();
 
 		$startTime = microtime(true);
 
@@ -188,11 +180,12 @@ class MemcachedStorage extends StorageAbstract implements IIncrementable {
 			}
 		}
 
-		// If we have a debugger, we have to log the request
-		if (!$this->debuggerDisabled && $debugger !== false) {
-			$debugger->addItem(new StorageItem('memcached', 'memcached.' . $this->currentConfigurationName,
-				StorageItem::METHOD_SET . ' ' . $key . ' for ' . $ttl, $data, microtime(true) - $startTime));
-		}
+		$this->addDebugItem(
+				'memcached',
+				StorageItem::METHOD_SET . ' ' . $key . ' for ' . $ttl,
+				$data,
+				microtime(true) - $startTime
+		);
 	}
 
 	/**
@@ -205,8 +198,6 @@ class MemcachedStorage extends StorageAbstract implements IIncrementable {
 	 * @throws \YapepBase\Exception\StorageException      On error.
 	 */
 	public function get($key) {
-		$debugger = Application::getInstance()->getDiContainer()->getDebugger();
-
 		$startTime = microtime(true);
 
 		$result = $this->memcache->get($this->makeKey($key));
@@ -217,11 +208,13 @@ class MemcachedStorage extends StorageAbstract implements IIncrementable {
 					. $this->memcache->getResultMessage(), $this->memcache->getResultCode());
 			}
 		}
-		// If we have a debugger, we have to log the request
-		if (!$this->debuggerDisabled && $debugger !== false) {
-			$debugger->addItem(new StorageItem('memcached', 'memcached.' . $this->currentConfigurationName,
-				StorageItem::METHOD_GET . ' ' . $key, $result, microtime(true) - $startTime));
-		}
+
+		$this->addDebugItem(
+				'memcached',
+				StorageItem::METHOD_GET . ' ' . $key,
+				$result,
+				microtime(true) - $startTime
+		);
 
 		return $result;
 	}
@@ -239,17 +232,17 @@ class MemcachedStorage extends StorageAbstract implements IIncrementable {
 		if ($this->readOnly) {
 			throw new StorageException('Trying to write to a read only storage');
 		}
-		$debugger = Application::getInstance()->getDiContainer()->getDebugger();
 
 		$startTime = microtime(true);
 
 		$this->memcache->delete($this->makeKey($key));
 
-		// If we have a debugger, we have to log the request
-		if (!$this->debuggerDisabled && $debugger !== false) {
-			$debugger->addItem(new StorageItem('memcached', 'memcached.' . $this->currentConfigurationName,
-				StorageItem::METHOD_DELETE . ' ' . $key, null, microtime(true) - $startTime));
-		}
+		$this->addDebugItem(
+				'memcached',
+				StorageItem::METHOD_DELETE . ' ' . $key,
+				null,
+				microtime(true) - $startTime
+		);
 	}
 
 	/**
@@ -263,17 +256,17 @@ class MemcachedStorage extends StorageAbstract implements IIncrementable {
 		if ($this->readOnly) {
 			throw new StorageException('Trying to write to a read only storage');
 		}
-		$debugger = Application::getInstance()->getDiContainer()->getDebugger();
 
 		$startTime = microtime(true);
 
 		$this->memcache->flush();
 
-		// If we have a debugger, we have to log the request
-		if (!$this->debuggerDisabled && $debugger !== false) {
-			$debugger->addItem(new StorageItem('memcached', 'memcached.' . $this->currentConfigurationName,
-				StorageItem::METHOD_CLEAR, null, microtime(true) - $startTime));
-		}
+		$this->addDebugItem(
+				'memcached',
+				StorageItem::METHOD_CLEAR,
+				null,
+				microtime(true) - $startTime
+		);
 	}
 
 	/**

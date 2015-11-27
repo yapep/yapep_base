@@ -13,8 +13,10 @@ namespace YapepBase\Debugger;
 
 use YapepBase\Application;
 use YapepBase\Debugger\Item\IDebugItem;
+use YapepBase\Event\EventHandlerRegistry;
 use YapepBase\Event\IEventHandler;
 use YapepBase\Event\Event;
+use YapepBase\Session\SessionRegistry;
 
 /**
  * Debugger class, that allows registering any number of DebuggerRenderers to render debugging data.
@@ -54,6 +56,19 @@ class DebuggerRegistry implements IDebugger, IEventHandler {
 	 */
 	protected $isRendered = false;
 
+	/**
+	 * The event handler registry instance.
+	 *
+	 * @var EventHandlerRegistry
+	 */
+	protected $eventHandlerRegistry;
+
+	/**
+	 * The session registry for the request.
+	 *
+	 * @var SessionRegistry
+	 */
+	protected $sessionRegistry;
 
 	/**
 	 * The registered renderers.
@@ -72,16 +87,57 @@ class DebuggerRegistry implements IDebugger, IEventHandler {
 	/**
 	 * Constructor.
 	 *
-	 * @param string $urlToLogFiles   The URL to the stored error log files (if there are any)
-	 * @param string $urlParamName    The name of tha parameter what should be replaced with the errorId.
+	 * @param SessionRegistry $sessionRegistry The session registry to use in the request.
 	 */
-	public function __construct($urlToLogFiles = null, $urlParamName = null) {
-		$this->urlToLogFiles = $urlToLogFiles;
-		$this->urlParamName = $urlParamName;
+	public function __construct(EventHandlerRegistry $eventHandlerRegistry, SessionRegistry $sessionRegistry) {
+		$this->eventHandlerRegistry = $eventHandlerRegistry;
+		$this->sessionRegistry = $sessionRegistry;
 
 		$this->startTime = isset($_SERVER['REQUEST_TIME_FLOAT'])
 			? (float)$_SERVER['REQUEST_TIME_FLOAT']
 			: microtime(true);
+	}
+
+	/**
+	 * Returns the URL to the stored error log files (if there are any).
+	 *
+	 * @return string|null
+	 */
+	public function getUrlToLogFiles() {
+		return $this->urlToLogFiles;
+	}
+
+	/**
+	 * Sets the URL to the stored error log files.
+	 *
+	 * @param string $urlToLogFiles   The URL to the stored error log files (if there are any)
+	 *
+	 * @return DebuggerRegistry
+	 */
+	public function setUrlToLogFiles($urlToLogFiles) {
+		$this->urlToLogFiles = $urlToLogFiles;
+		return $this;
+	}
+
+	/**
+	 * Returns the name of the parameter what should be replaced with the errorId.
+	 *
+	 * @return string|null
+	 */
+	public function getUrlParamName() {
+		return $this->urlParamName;
+	}
+
+	/**
+	 * Sets the URL parameter name
+	 *
+	 * @param string $urlParamName    The name of tha parameter what should be replaced with the errorId.
+	 *
+	 * @return DebuggerRegistry
+	 */
+	public function setUrlParamName($urlParamName) {
+		$this->urlParamName = $urlParamName;
+		return $this;
 	}
 
 	/**
@@ -136,6 +192,27 @@ class DebuggerRegistry implements IDebugger, IEventHandler {
 	}
 
 	/**
+	 * Registers the event handler.
+	 *
+	 * @return void
+	 */
+	public function registerEventHandler() {
+		// Make sure we are only registered once for the event.
+		$this->eventHandlerRegistry->removeEventHandler(Event::TYPE_APPLICATION_BEFORE_OUTPUT_SEND, $this);
+		// Register the event handler.
+		$this->eventHandlerRegistry->registerEventHandler(Event::TYPE_APPLICATION_BEFORE_OUTPUT_SEND, $this);
+	}
+
+	/**
+	 * Returns true if the registry has renderers.
+	 *
+	 * @return bool
+	 */
+	public function hasRenderers() {
+		return !empty($this->renderers);
+	}
+
+	/**
 	 * Handles an event
 	 *
 	 * @param \YapepBase\Event\Event $event   The dispatched event.
@@ -179,7 +256,7 @@ class DebuggerRegistry implements IDebugger, IEventHandler {
 				$_POST,
 				$_GET,
 				$_COOKIE,
-				Application::getInstance()->getDiContainer()->getSessionRegistry()->getAllData()
+				$this->sessionRegistry->getAllData()
 			);
 		}
 	}

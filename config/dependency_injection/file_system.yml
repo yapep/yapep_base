@@ -1,0 +1,26 @@
+services:
+    yapepBase.fileHandler:
+        class: YapepBase\File\IFileHandler
+        tags: [{name: yapepBase.skipAutoResolver}]
+        factory: [@yapepBase.fileHandlerFactory, getFileHandler]
+
+    yapepBase.fileHandlerFactory:
+        class: YapepBase\File\FileHandlerFactory
+        tags: [{name: yapepBase.skipAutoResolver}]
+        arguments:
+            - @service_container
+
+    yapepBase.fileHandlerPhp:
+        class: YapepBase\File\FileHandlerPhp
+        tags:
+            - {name: yapepBase.skipAutoResolver}
+            - {name: yapepBase.hideFromAutoResolver}
+
+    yapepBase.fileHandlerUnix:
+        class: YapepBase\File\FileHandlerUnix
+        tags:
+            - {name: yapepBase.skipAutoResolver}
+            - {name: yapepBase.hideFromAutoResolver}
+        arguments:
+            - @service_container
+

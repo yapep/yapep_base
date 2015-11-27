@@ -188,6 +188,7 @@ abstract class SessionAbstract implements ISession {
 	 * @return void
 	 */
 	public function registerEventHandler() {
+		// FIXME This should either use a param for the event handler registry, or use some other kind of injection
 		$registry = Application::getInstance()->getDiContainer()->getEventHandlerRegistry();
 		$registry->registerEventHandler(Event::TYPE_APPLICATION_BEFORE_CONTROLLER_RUN, $this);
 		$registry->registerEventHandler(Event::TYPE_APPLICATION_AFTER_CONTROLLER_RUN, $this);
@@ -199,6 +200,7 @@ abstract class SessionAbstract implements ISession {
 	 * @return void
 	 */
 	public function removeEventHandler() {
+		// FIXME This should either use a param for the event handler registry, or use some other kind of injection
 		$registry = Application::getInstance()->getDiContainer()->getEventHandlerRegistry();
 		$registry->removeEventHandler(Event::TYPE_APPLICATION_BEFORE_CONTROLLER_RUN, $this);
 		$registry->removeEventHandler(Event::TYPE_APPLICATION_AFTER_CONTROLLER_RUN, $this);

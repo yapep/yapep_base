@@ -11,8 +11,6 @@
 namespace YapepBase\Autoloader;
 
 
-use YapepBase\Autoloader\IAutoloader;
-
 /**
  * Handles adding and removing autoloaders to/from the application.
  *

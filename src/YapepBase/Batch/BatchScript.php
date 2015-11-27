@@ -14,9 +14,10 @@ declare(ticks = 1);
 namespace YapepBase\Batch;
 
 use YapepBase\Application;
-use YapepBase\DependencyInjection\SystemContainer;
+use YapepBase\ErrorHandler\ErrorHandlerRegistry;
 use YapepBase\ErrorHandler\ITerminatable;
 use YapepBase\Event\Event;
+use YapepBase\Event\EventHandlerRegistry;
 use YapepBase\Exception\ParameterException;
 use YapepBase\Mime\MimeType;
 use YapepBase\View\ViewDo;
@@ -68,6 +69,16 @@ abstract class BatchScript implements ITerminatable {
 	const EXIT_CODE_LOCK_FAILED = 50;
 
 	/**
+	 * @var EventHandlerRegistry
+	 */
+	protected $eventHandlerRegistry;
+
+	/**
+	 * @var ErrorHandlerRegistry
+	 */
+	protected $errorHandlerRegistry;
+
+	/**
 	 * Stores the content type used by the script for output.
 	 *
 	 * @var string
@@ -112,7 +123,12 @@ abstract class BatchScript implements ITerminatable {
 	/**
 	 * Constructor.
 	 */
-	public function __construct() {
+	public function __construct(
+		EventHandlerRegistry $eventHandlerRegistry,
+		ErrorHandlerRegistry $errorHandlerRegistry
+	) {
+		$this->eventHandlerRegistry = $eventHandlerRegistry;
+		$this->errorHandlerRegistry = $errorHandlerRegistry;
 		$this->setExitCode(self::EXIT_CODE_SUCCESS);
 		$this->cliHelper = new CliUserInterfaceHelper($this->getScriptDescription());
 		$this->setSignalHandler();
@@ -157,12 +173,8 @@ abstract class BatchScript implements ITerminatable {
 	 * @return void
 	 */
 	protected function runBefore() {
-		$application = Application::getInstance();
-		$container = $application->getDiContainer();
-		$container[SystemContainer::KEY_VIEW_DO] = $container->share(function($container) {
-			return new ViewDo(MimeType::PLAINTEXT);
-		});
-
+		// FIXME rethink this
+		Application::getInstance()->getDiContainer()->set('yapepBase.viewDo', new ViewDo(MimeType::PLAINTEXT));
 	}
 
 	/**
@@ -182,7 +194,7 @@ abstract class BatchScript implements ITerminatable {
 	 * @return void
 	 */
 	protected function setAsTerminator() {
-		Application::getInstance()->getDiContainer()->getErrorHandlerRegistry()->setTerminator($this);
+		$this->errorHandlerRegistry->setTerminator($this);
 	}
 
 	/**
@@ -219,8 +231,7 @@ abstract class BatchScript implements ITerminatable {
 	 */
 	public function run() {
 		$this->setAsTerminator();
-		$eventHandlerRegistry = Application::getInstance()->getDiContainer()->getEventHandlerRegistry();
-		$eventHandlerRegistry->raise(new Event(Event::TYPE_APPLICATION_BEFORE_RUN));
+		$this->eventHandlerRegistry->raise(new Event(Event::TYPE_APPLICATION_BEFORE_RUN));
 
 		$this->prepareSwitches();
 		try {
@@ -245,9 +256,9 @@ abstract class BatchScript implements ITerminatable {
 				echo $this->cliHelper->getUsageOutput(true);
 			}
 			else {
-				$eventHandlerRegistry->raise(new Event(Event::TYPE_CONTROLLER_BEFORE_ACTION));
+				$this->eventHandlerRegistry->raise(new Event(Event::TYPE_CONTROLLER_BEFORE_ACTION));
 				$this->execute();
-				$eventHandlerRegistry->raise(new Event(Event::TYPE_CONTROLLER_AFTER_ACTION));
+				$this->eventHandlerRegistry->raise(new Event(Event::TYPE_CONTROLLER_AFTER_ACTION));
 			}
 		}
 		catch (\Exception $exception) {
@@ -255,12 +266,12 @@ abstract class BatchScript implements ITerminatable {
 			if (self::EXIT_CODE_SUCCESS == $this->getExitCode()) {
 				$this->setExitCode(self::EXIT_CODE_UNHANDLED_EXCEPTION);
 			}
-			Application::getInstance()->getDiContainer()->getErrorHandlerRegistry()->handleException($exception);
+			$this->errorHandlerRegistry->handleException($exception);
 		}
 		$this->removeSignalHandler();
 
 		$this->runAfter();
-		$eventHandlerRegistry->raise(new Event(Event::TYPE_APPLICATION_AFTER_RUN));
+		$this->eventHandlerRegistry->raise(new Event(Event::TYPE_APPLICATION_AFTER_RUN));
 	}
 
 	/**
@@ -352,7 +363,8 @@ abstract class BatchScript implements ITerminatable {
 	 * @return void
 	 */
 	protected function setToView($nameOrData, $value = null) {
-		Application::getInstance()->getDiContainer()->getViewDo()->set($nameOrData, $value);
+		// FIXME rethink this
+		Application::getInstance()->getDiContainer()->get('yapepBase.viewDo')->set($nameOrData, $value);
 	}
 
 	/**

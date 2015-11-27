@@ -10,6 +10,7 @@
 
 namespace YapepBase\Communication;
 use YapepBase\Application;
+use YapepBase\Debugger\DebuggerRegistry;
 use YapepBase\Debugger\Item\CurlRequestItem;
 use YapepBase\Exception\CurlException;
 use YapepBase\Exception\ParameterException;
@@ -104,6 +105,22 @@ class CurlHttpRequest {
 	 * @var bool
 	 */
 	protected $debuggerDisabled = false;
+
+	/**
+	 * The debugger.
+	 *
+	 * @var DebuggerRegistry
+	 */
+	protected $debugger;
+
+	/**
+	 * CurlHttpRequest constructor.
+	 *
+	 * @param DebuggerRegistry $debugger The debugger instance
+	 */
+	public function __construct(DebuggerRegistry $debugger) {
+		$this->debugger = $debugger;
+	}
 
 	/**
 	 * Sets the URL for the request.
@@ -324,16 +341,24 @@ class CurlHttpRequest {
 
 		curl_setopt_array($curl, $options);
 
-		$debugger = ($this->debuggerDisabled) ? false : Application::getInstance()->getDiContainer()->getDebugger();
+		// FIXME This should be injected via setter injection
+		$useDebugger = ($this->debuggerDisabled) ? false : $this->debugger->hasRenderers();
 
 		// If we have a debugger, we have to log the query
 		$startTime = microtime(true);
 		$result = curl_exec($curl);
 
 
-		if ($debugger !== false) {
-			$debugger->addItem(new CurlRequestItem(CurlRequestItem::PROTOCOL_HTTP, $this->method, $this->url,
-				(array)$this->payload, $this->headers, $this->options, microtime(true) - $startTime));
+		if ($useDebugger !== false) {
+			$this->debugger->addItem(new CurlRequestItem(
+				CurlRequestItem::PROTOCOL_HTTP,
+				$this->method,
+				$this->url,
+				(array)$this->payload,
+				$this->headers,
+				$this->options,
+				microtime(true) - $startTime
+			));
 		}
 
 		$error = null;

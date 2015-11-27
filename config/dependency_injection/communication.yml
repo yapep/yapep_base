@@ -1,0 +1,7 @@
+services:
+    yapepBase.curlHttpRequest:
+        class: YapepBase\Communication\CurlHttpRequest
+        tags: [{name: yapepBase.skipAutoResolver}]
+        arguments:
+            - @yapepBase.debuggerRegistry
+        scope: prototype

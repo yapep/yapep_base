@@ -1,0 +1,4 @@
+services:
+    yapepBase.eventHandlerRegistry:
+        class: YapepBase\Event\EventHandlerRegistry
+        tags: [{name: yapepBase.skipAutoResolver}]

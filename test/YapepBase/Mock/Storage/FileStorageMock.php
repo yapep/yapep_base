@@ -22,19 +22,6 @@ use YapepBase\Storage\FileStorage;
 class FileStorageMock extends FileStorage {
 
 	/**
-	 * Constructor.
-	 *
-	 * @param string $configName   The name of the configuration to use.
-	 *
-	 * @throws \YapepBase\Exception\ConfigException    On configuration errors.
-	 * @throws \YapepBase\Exception\StorageException   On storage errors.
-	 */
-	public function __construct($configName, \YapepBase\File\IFileHandler $fileHandler) {
-		$this->fileHandler = $fileHandler;
-		parent::__construct($configName);
-	}
-
-	/**
 	 * Returns the full path for the specified filename
 	 *
 	 * @param string $fileName   The file name.

@@ -1,0 +1,7 @@
+services:
+    yapepBase.debuggerRegistry:
+        class: YapepBase\Debugger\DebuggerRegistry
+        arguments:
+            - @yapepBase.eventHandlerRegistry
+            - @yapepBase.sessionRegistry
+        tags: [{name: yapepBase.skipAutoResolver}]

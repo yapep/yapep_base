@@ -1,0 +1,17 @@
+imports:
+    - {resource: dependency_injection/communication.yml}
+    - {resource: dependency_injection/data_storage.yml}
+    - {resource: dependency_injection/debugging.yml}
+    - {resource: dependency_injection/error_handling.yml}
+    - {resource: dependency_injection/event.yml}
+    - {resource: dependency_injection/execution.yml}
+    - {resource: dependency_injection/file_system.yml}
+    - {resource: dependency_injection/logging.yml}
+    - {resource: dependency_injection/request_handling.yml}
+    - {resource: dependency_injection/util.yml}
+
+services:
+    yapepBase.diContainerHelper:
+        class: YapepBase\DependencyInjection\ContainerHelper
+        arguments:
+            - @service_container

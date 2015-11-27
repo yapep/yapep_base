@@ -11,6 +11,7 @@
 namespace YapepBase\Storage;
 
 
+use YapepBase\Application;
 use YapepBase\Config;
 use YapepBase\Exception\StorageException;
 
@@ -86,21 +87,28 @@ class StorageFactory {
 	 * @return \YapepBase\Storage\StorageAbstract
 	 */
 	protected static function getStorage($configName, $storageType) {
+		// FIXME maybe we should have a filehandler registry instead of a factory?
+		$debuggerRegistry = Application::getInstance()->getDiContainer()->get('yapepBase.debuggerRegistry');
+
 		switch ($storageType) {
 			case self::TYPE_DUMMY:
-				return new DummyStorage($configName);
+				return new DummyStorage($debuggerRegistry, $configName);
 				break;
 
 			case self::TYPE_MEMCACHED:
-				return new MemcachedStorage($configName);
+				return new MemcachedStorage($debuggerRegistry, $configName);
 				break;
 
 			case self::TYPE_MEMCACHE:
-				return new MemcacheStorage($configName);
+				return new MemcacheStorage($debuggerRegistry, $configName);
 				break;
 
 			case self::TYPE_FILE:
-				return new FileStorage($configName);
+				return new FileStorage(
+						$debuggerRegistry,
+						Application::getInstance()->getDiContainer()->get('yapepBase.fileHandler'),
+						$configName
+				);
 				break;
 
 			default:

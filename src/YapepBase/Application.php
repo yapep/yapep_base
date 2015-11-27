@@ -9,20 +9,18 @@
 
 
 namespace YapepBase;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use YapepBase\Controller\IController;
+use YapepBase\Event\EventHandlerRegistry;
+use YapepBase\Exception\DiException;
 use YapepBase\Exception\RedirectException;
 use YapepBase\Event\Event;
 use YapepBase\Response\IResponse;
 use YapepBase\Request\IRequest;
-use YapepBase\ErrorHandler\IErrorHandler;
 use YapepBase\Router\IRouter;
-use YapepBase\DependencyInjection\SystemContainer;
-use YapepBase\Debugger\IDebugger;
 use YapepBase\Exception\Exception;
 use YapepBase\Exception\HttpException;
 use YapepBase\ErrorHandler\ErrorHandlerRegistry;
-use YapepBase\Request\HttpRequest;
-use YapepBase\Exception\ControllerException;
-use YapepBase\Event\EventHandlerRegistry;
 use YapepBase\Exception\RouterException;
 use YapepBase\I18n\ITranslator;
 
@@ -38,6 +36,7 @@ use YapepBase\I18n\ITranslator;
  * @package    YapepBase
  *
  * @todo debugger support
+ * @todo the application seems to be doing 2 things, acting as a registry, and performing the request dispatching, we should separate these concerns
  */
 class Application {
 
@@ -80,16 +79,23 @@ class Application {
 	protected $config;
 
 	/**
-	 * The error handler container instance
+	 * The error handler registry instance
 	 *
 	 * @var \YapepBase\ErrorHandler\ErrorHandlerRegistry
 	 */
 	protected $errorHandlerRegistry;
 
 	/**
+	 * The event handler registry instance
+	 *
+	 * @var EventHandlerRegistry
+	 */
+	protected $eventHandlerRegistry;
+
+	/**
 	 * Stores the system DI container
 	 *
-	 * @var \YapepBase\DependencyInjection\SystemContainer
+	 * @var ContainerInterface
 	 */
 	protected $diContainer;
 
@@ -115,32 +121,32 @@ class Application {
 	protected $dispatchedAction;
 
 	/**
-	 * Singleton constructor
+	 * Constructor
 	 */
-	protected function __construct() {
+	public function __construct(
+		ContainerInterface $diContainer,
+		ErrorHandlerRegistry $errorHandlerRegistry,
+		EventHandlerRegistry $eventHandlerRegistry
+	) {
 		$this->config = Config::getInstance();
+		$this->diContainer = $diContainer;
 		// Set up error handling
-		$this->errorHandlerRegistry = $this->getDiContainer()->getErrorHandlerRegistry();
+		$this->errorHandlerRegistry = $errorHandlerRegistry;
 		$this->errorHandlerRegistry->register();
+		$this->eventHandlerRegistry = $eventHandlerRegistry;
+		static::$instance = $this;
 	}
-
-	/**
-	 * Singleton __clone() method
-	 *
-	 * @codeCoverageIgnore
-	 */
-	protected function __clone() {}
 
 	/**
 	 * Singleton getter
 	 *
 	 * @return \YapepBase\Application
 	 *
-	 * @codeCoverageIgnore
+	 * @throws Exception   If getting the application before it was constructed.
 	 */
 	public static function getInstance() {
 		if (is_null(static::$instance)) {
-			static::$instance = new static();
+			throw new Exception('The application has not been constructed yet!');
 		}
 		return static::$instance;
 	}
@@ -181,23 +187,23 @@ class Application {
 	/**
 	 * Sets the DI container to be used by the application
 	 *
-	 * @param \YapepBase\DependencyInjection\SystemContainer $diContainer   The DI container instance to use
+	 * @param ContainerInterface $diContainer   The DI container instance to use
 	 *
 	 * @return void
 	 */
-	public function setDiContainer(SystemContainer $diContainer) {
+	public function setDiContainer(ContainerInterface $diContainer) {
+		// TODO investigate, as this is probably not needed if the application is not a singleton
 		$this->diContainer = $diContainer;
 	}
 
 	/**
 	 * Returns the DI container used by the application
 	 *
-	 * @return \YapepBase\DependencyInjection\SystemContainer
+	 * @return ContainerInterface
+	 *
+	 * @throws DiException   If the DI container is not set.
 	 */
 	public function getDiContainer() {
-		if (empty($this->diContainer)) {
-			$this->diContainer = new SystemContainer();
-		}
 		return $this->diContainer;
 	}
 
@@ -246,7 +252,7 @@ class Application {
 	 *
 	 * @return \YapepBase\I18n\ITranslator   The instance.
 	 *
-	 * @throws Exception\Exception   If no translator is configured.
+	 * @throws \YapepBase\Exception\Exception   If no translator is configured.
 	 */
 	public function getI18nTranslator() {
 		if (empty($this->i18nTranslator)) {
@@ -308,9 +314,9 @@ class Application {
 	 */
 	public function run() {
 		// Inform the ErrorHandler about the run
-		$this->diContainer->getErrorHandlerRegistry()->reportApplicationRun();
+		$this->errorHandlerRegistry->reportApplicationRun();
 
-		$eventHandlerRegistry = $this->diContainer->getEventHandlerRegistry();
+		$eventHandlerRegistry = $this->eventHandlerRegistry;
 
 		try {
 			$eventHandlerRegistry->raise(new Event(Event::TYPE_APPLICATION_BEFORE_RUN));
@@ -332,7 +338,8 @@ class Application {
 				}
 			}
 
-			$controller = $this->getDiContainer()->getController($controllerName, $this->request, $this->response);
+			/** @var IController $controller */
+			$controller = $this->diContainer->get('yapepBase.controller.' . $controllerName);
 
 			$eventHandlerRegistry->raise(new Event(Event::TYPE_APPLICATION_BEFORE_CONTROLLER_RUN));
 			$controller->run($action);
@@ -405,11 +412,13 @@ class Application {
 		$controllerName = $this->config->get('system.errorController', self::DEFAULT_ERROR_CONTROLLER_NAME);
 
 		try {
-			try {
-				$controller = $this->diContainer->getController($controllerName, $this->request, $this->response);
-			} catch (ControllerException $exception) {
+
+			$errorController = 'yapepBase.controller.' . $controllerName;
+			if ($this->diContainer->has($errorController)) {
+				$controller = $this->diContainer->get($errorController);
+			} else {
 				// No such controller, fall back to built in default
-				$controller = $this->diContainer->getDefaultErrorController($this->request, $this->response);
+				$controller = $this->diContainer->get('yapepBase.defaultErrorController');
 				$controllerName = self::DEFAULT_ERROR_CONTROLLER_NAME;
 			}
 		} catch (\Exception $e) {
@@ -441,9 +450,8 @@ class Application {
 	 * @return void
 	 */
 	protected function raiseEventIfNotRaisedYet($eventType) {
-		$eventHandlerRegistry = $this->diContainer->getEventHandlerRegistry();
-		if (is_null($eventHandlerRegistry->getLastTimeForEventType($eventType))) {
-			$eventHandlerRegistry->raise(new Event($eventType));
+		if (is_null($this->eventHandlerRegistry->getLastTimeForEventType($eventType))) {
+			$this->eventHandlerRegistry->raise(new Event($eventType));
 		}
 	}
 

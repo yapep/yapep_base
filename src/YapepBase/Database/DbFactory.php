@@ -12,8 +12,8 @@
 namespace YapepBase\Database;
 
 
+use YapepBase\Application;
 use YapepBase\Config;
-use YapepBase\Database\DbConnection;
 use YapepBase\Exception\ConfigException;
 use YapepBase\Exception\DatabaseException;
 
@@ -201,13 +201,16 @@ class DbFactory {
 	 * @throws DatabaseException   On configuration or connection errors.
 	 */
 	protected static function makeConnection(array $configuration, $connectionName) {
+		// FIXME rethink DB handling in 1.0
+		$debuggerRegistry = Application::getInstance()->getDiContainer()->get('yapepBase.debuggerRegistry');
+
 		switch ($configuration['backendType']) {
 			case self::BACKEND_TYPE_MYSQL:
-				return new MysqlConnection($configuration, $connectionName, static::$paramPrefix);
+				return new MysqlConnection($debuggerRegistry, $configuration, $connectionName, static::$paramPrefix);
 				break;
 
 			case self::BACKEND_TYPE_SQLITE:
-				return new SqliteConnection($configuration, $connectionName, static::$paramPrefix);
+				return new SqliteConnection($debuggerRegistry, $configuration, $connectionName, static::$paramPrefix);
 				break;
 
 			default:

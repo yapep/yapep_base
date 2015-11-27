@@ -79,6 +79,7 @@ abstract class BoAbstract {
 	 * @return bool|\YapepBase\Storage\IStorage
 	 */
 	protected function getStorage() {
+		// FIXME This should be injected instead.
 		return Application::getInstance()->getDiContainer()->getMiddlewareStorage();
 	}
 
@@ -223,6 +224,7 @@ abstract class BoAbstract {
 	 * @return \YapepBase\Database\DbTable
 	 */
 	protected function getTable($databaseNamespace, $name, DbConnection $connection = null) {
+		// FIXME This may not be needed any more
 		return Application::getInstance()->getDiContainer()->getDbTable($databaseNamespace, $name, $connection);
 	}
 }

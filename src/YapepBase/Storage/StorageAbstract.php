@@ -12,6 +12,8 @@
 namespace YapepBase\Storage;
 
 
+use YapepBase\Debugger\DebuggerRegistry;
+use YapepBase\Debugger\Item\StorageItem;
 use YapepBase\Exception\ConfigException;
 use YapepBase\Config;
 
@@ -34,14 +36,30 @@ abstract class StorageAbstract implements IStorage {
 	protected $currentConfigurationName;
 
 	/**
+	 * If TRUE, no debug items are created by this storage.
+	 *
+	 * @var bool
+	 */
+	protected $debuggerDisabled;
+
+	/**
+	 * The debugger registry instance.
+	 *
+	 * @var DebuggerRegistry
+	 */
+	protected $debuggerRegistry;
+
+	/**
 	 * Constructor.
 	 *
-	 * @param string $configName   The name of the configuration to use.
+	 * @param DebuggerRegistry $deubberRegistry The debugger registry.
+	 * @param string           $configName      The name of the configuration to use.
 	 *
 	 * @throws \YapepBase\Exception\ConfigException    On configuration errors.
 	 * @throws \YapepBase\Exception\StorageException   On storage errors.
 	 */
-	public function __construct($configName) {
+	public function __construct(DebuggerRegistry $debuggerRegistry, $configName) {
+		$this->debuggerRegistry = $debuggerRegistry;
 		$this->currentConfigurationName = $configName;
 
 		$properties = $this->getConfigProperties();
@@ -60,12 +78,6 @@ abstract class StorageAbstract implements IStorage {
 		$this->setupConfig($configData);
 	}
 
-	/**
-	 * Returns the config properties(last part of the key) used by the class.
-	 *
-	 * @return array
-	 */
-	abstract protected function getConfigProperties();
 
 	/**
 	 * Sets up the backend.
@@ -77,5 +89,28 @@ abstract class StorageAbstract implements IStorage {
 	 * @throws \YapepBase\Exception\ConfigException    On configuration errors.
 	 * @throws \YapepBase\Exception\StorageException   On storage errors.
 	 */
-	abstract protected function setupConfig(array $config);
+	protected function setupConfig(array $config) {
+		$this->debuggerDisabled = isset($config['debuggerDisabled']) ? (bool)$config['debuggerDisabled'] : false;
+	}
+
+	protected function addDebugItem($backendType, $query, $params, $executionTime)
+	{
+		if (!$this->debuggerDisabled && $this->debuggerRegistry->hasRenderers()) {
+			$this->debuggerRegistry->addItem(new StorageItem(
+					$backendType,
+					$backendType . '.' . $this->currentConfigurationName,
+					$query,
+					$params,
+					$executionTime
+			));
+		}
+
+	}
+
+	/**
+	 * Returns the config properties(last part of the key) used by the class.
+	 *
+	 * @return array
+	 */
+	abstract protected function getConfigProperties();
 }

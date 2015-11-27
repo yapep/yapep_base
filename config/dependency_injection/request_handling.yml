@@ -1,0 +1,34 @@
+services:
+    yapepBase.application:
+        class: YapepBase\Application
+        tags: [{name: yapepBase.skipAutoResolver}]
+        arguments:
+            - @service_container
+            - @yapepBase.errorHandlerRegistry
+            - @yapepBase.eventHandlerRegistry
+
+    yapepBase.sessionRegistry:
+        class: YapepBase\Session\SessionRegistry
+        tags: [{name: yapepBase.skipAutoResolver}]
+
+    yapepBase.viewDo:
+        class: YapepBase\View\ViewDo
+        arguments:
+            - %yapepbase.mimetype.html%
+        tags: [{name: yapepBase.skipAutoResolver}]
+        synthetic: true
+
+    yapepBase.currentRequest:
+        class: YapepBase\Request\IRequest
+        factory: [@yapepBase.application, getRequest]
+        tags: [{name: yapepBase.skipAutoResolver}]
+
+    yapepBase.currentResponse:
+        class: YapepBase\Response\IResponse
+        factory: [@yapepBase.application, getResponse]
+        tags: [{name: yapepBase.skipAutoResolver}]
+
+    yapepBase.currentRouter:
+        class: YapepBase\Router\IRouter
+        factory: [@yapepBase.application, getRouter]
+        tags: [{name: yapepBase.skipAutoResolver}]

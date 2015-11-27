@@ -1,0 +1,9 @@
+services:
+    yapepBase.commandExecutor:
+        class: YapepBase\Shell\CommandExecutor
+        scope: prototype
+        tags: [{name: yapepBase.skipAutoResolver}]
+
+    yapepBase.commandOutputHelper:
+        class: YapepBase\Helper\CommandOutputHelper
+        tags: [{name: yapepBase.skipAutoResolver}]

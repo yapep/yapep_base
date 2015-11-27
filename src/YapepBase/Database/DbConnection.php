@@ -15,7 +15,7 @@ namespace YapepBase\Database;
 use \PDO;
 use \PDOException;
 
-use YapepBase\Application;
+use YapepBase\Debugger\DebuggerRegistry;
 use YapepBase\Debugger\Item\SqlQueryItem;
 use YapepBase\Exception\DatabaseException;
 
@@ -33,6 +33,13 @@ abstract class DbConnection {
 	 * @var \PDO
 	 */
 	protected $connection;
+
+	/**
+	 * Stores the debugger instance.
+	 *
+	 * @var DebuggerRegistry
+	 */
+	protected $debuggerRegistry;
 
 	/**
 	 * Stores the connection name
@@ -73,16 +80,23 @@ abstract class DbConnection {
 	/**
 	 * Constructor
 	 *
-	 * @param array  $configuration    The configuration for the parameters.
-	 * @param string $connectionName   The name of the connection.
-	 * @param string $paramPrefix      The prefix for the bound parameters.
+	 * @param DebuggerRegistry $debuggerRegistry The debugger registry instance.
+	 * @param array            $configuration    The configuration for the parameters.
+	 * @param string           $connectionName   The name of the connection.
+	 * @param string           $paramPrefix      The prefix for the bound parameters.
 	 *
 	 * @throws DatabaseException   On connection errors.
 	 */
-	public function __construct(array $configuration, $connectionName, $paramPrefix = '') {
-		$this->configuration = $configuration;
-		$this->connectionName = $connectionName;
-		$this->paramPrefix = $paramPrefix;
+	public function __construct(
+			DebuggerRegistry $debuggerRegistry,
+			array $configuration,
+			$connectionName,
+			$paramPrefix = ''
+	) {
+		$this->debuggerRegistry = $debuggerRegistry;
+		$this->configuration    = $configuration;
+		$this->connectionName   = $connectionName;
+		$this->paramPrefix      = $paramPrefix;
 		try {
 			$this->connect($configuration);
 		} catch (PDOException $exception) {
@@ -137,10 +151,10 @@ abstract class DbConnection {
 		}
 
 		try {
-			$debugger = Application::getInstance()->getDiContainer()->getDebugger();
+			$debuggerEnabled = $this->debuggerRegistry->hasRenderers();
 
 			// If we have a debugger, we have to log the query
-			if ($debugger !== false) {
+			if ($debuggerEnabled) {
 				// We have to quote the parameters to make the displayed query usable
 				$paramsQuoted = array();
 				foreach ($params as $paramName => $paramValue) {
@@ -148,7 +162,7 @@ abstract class DbConnection {
 				}
 				$debugItem = new SqlQueryItem($this->getBackendType(), $this->getBackendType() . '.'
 					. $this->connectionName, $query, $paramsQuoted);
-				$debugger->addItem($debugItem);
+				$this->debuggerRegistry->addItem($debugItem);
 				$startTime = microtime(true);
 			}
 
@@ -159,7 +173,7 @@ abstract class DbConnection {
 			$statement->execute();
 
 			// If we have a debugger, we have to log the execution time
-			if ($debugger !== false) {
+			if ($debuggerEnabled) {
 				$debugItem->setExecutionTime(microtime(true) - $startTime);
 			}
 

@@ -30,16 +30,6 @@ use YapepBase\Request\IRequest;
 interface IController {
 
 	/**
-	 * Constructor
-	 *
-	 * @param \YapepBase\Request\IRequest   $request    The request object
-	 * @param \YapepBase\Response\IResponse $response   The response object
-	 *
-	 * @throws \YapepBase\Exception\ControllerException   On error. (eg. incompatible request or response object)
-	 */
-	public function __construct(IRequest $request, IResponse $response);
-
-	/**
 	 * Runs the specified action
 	 *
 	 * @param string $action   The name of the action (without the controller specific prefix)

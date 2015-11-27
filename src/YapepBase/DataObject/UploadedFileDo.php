@@ -83,7 +83,8 @@ class UploadedFileDo {
 			throw new ParameterException('Invalid array provided. The size of the keys do not match');
 		}
 
-		$fileHandler = Application::getInstance()->getDiContainer()->getFileHandler();
+		// FIXME rethink this, as this should probably be injected
+		$fileHandler = Application::getInstance()->getDiContainer()->get('yapepBase.fileHandler');
 
 		// If the filesize is smaller than 0, we have a file that's bigger than 2GB, repopulate the file sizes.
 		foreach ($this->sizes as $index => $size) {

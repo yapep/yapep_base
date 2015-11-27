@@ -15,7 +15,6 @@ use YapepBase\Application;
 use YapepBase\Debugger\Item\StorageItem;
 use YapepBase\Exception\StorageException;
 use YapepBase\Exception\ConfigException;
-use YapepBase\DependencyInjection\SystemContainer;
 
 /**
  * MemcacheStorage class
@@ -93,13 +92,6 @@ class MemcacheStorage extends StorageAbstract {
 	protected $readOnly = false;
 
 	/**
-	 * If TRUE, no debug items are created by this storage.
-	 *
-	 * @var bool
-	 */
-	protected $debuggerDisabled;
-
-	/**
 	 * Returns the config properties(last part of the key) used by the class.
 	 *
 	 * @return array
@@ -136,8 +128,8 @@ class MemcacheStorage extends StorageAbstract {
 		$this->keySuffix        = empty($config['keySuffix'])        ? ''    : $config['keySuffix'];
 		$this->hashKey          = empty($config['hashKey'])          ? false : (bool)$config['hashKey'];
 		$this->readOnly         = empty($config['readOnly'])         ? false : (bool)$config['readOnly'];
-		$this->debuggerDisabled = empty($config['debuggerDisabled']) ? false : (bool)$config['debuggerDisabled'];
 
+		// FIXME fix this
 		$this->memcache = Application::getInstance()->getDiContainer()->getMemcache();
 		if (!$this->memcache->connect($this->host, $this->port)) {
 			throw new StorageException('MemcacheStorage is unable to connect to server: '
@@ -176,17 +168,17 @@ class MemcacheStorage extends StorageAbstract {
 		if ($this->readOnly) {
 			throw new StorageException('Trying to write to a read only storage');
 		}
-		$debugger = Application::getInstance()->getDiContainer()->getDebugger();
 
 		$startTime = microtime(true);
 
 		$this->memcache->set($this->makeKey($key), $data, 0, $ttl);
 
-		// If we have a debugger, we have to log the request
-		if (!$this->debuggerDisabled && $debugger !== false) {
-			$debugger->addItem(new StorageItem('memcache', 'memcache.' . $this->currentConfigurationName,
-				StorageItem::METHOD_SET . ' ' . $key . ' for ' . $ttl, $data, microtime(true) - $startTime));
-		}
+		$this->addDebugItem(
+				'memcache',
+				StorageItem::METHOD_SET . ' ' . $key . ' for ' . $ttl,
+				$data,
+				microtime(true) - $startTime
+		);
 	}
 
 	/**
@@ -199,17 +191,16 @@ class MemcacheStorage extends StorageAbstract {
 	 * @throws \YapepBase\Exception\StorageException      On error.
 	 */
 	public function get($key) {
-		$debugger = Application::getInstance()->getDiContainer()->getDebugger();
-
 		$startTime = microtime(true);
 
 		$value = $this->memcache->get($this->makeKey($key));
 
-		// If we have a debugger, we have to log the request
-		if (!$this->debuggerDisabled && $debugger !== false) {
-			$debugger->addItem(new StorageItem('memcache', 'memcache.' . $this->currentConfigurationName,
-				StorageItem::METHOD_GET . ' ' . $key, $value, microtime(true) - $startTime));
-		}
+		$this->addDebugItem(
+				'memcache',
+				StorageItem::METHOD_GET . ' ' . $key,
+				$value,
+				microtime(true) - $startTime
+		);
 
 		return $value;
 	}
@@ -227,17 +218,17 @@ class MemcacheStorage extends StorageAbstract {
 		if ($this->readOnly) {
 			throw new StorageException('Trying to write to a read only storage');
 		}
-		$debugger = Application::getInstance()->getDiContainer()->getDebugger();
 
 		$startTime = microtime(true);
 
 		$this->memcache->delete($this->makeKey($key));
 
-		// If we have a debugger, we have to log the request
-		if (!$this->debuggerDisabled && $debugger !== false) {
-			$debugger->addItem(new StorageItem('memcache', 'memcache.' . $this->currentConfigurationName,
-				StorageItem::METHOD_DELETE . ' ' . $key, null, microtime(true) - $startTime));
-		}
+		$this->addDebugItem(
+				'memcache',
+				StorageItem::METHOD_DELETE . ' ' . $key,
+				null,
+				microtime(true) - $startTime
+		);
 	}
 
 	/**
@@ -251,17 +242,17 @@ class MemcacheStorage extends StorageAbstract {
 		if ($this->readOnly) {
 			throw new StorageException('Trying to write to a read only storage');
 		}
-		$debugger = Application::getInstance()->getDiContainer()->getDebugger();
 
 		$startTime = microtime(true);
 
 		$this->memcache->flush();
 
-		// If we have a debugger, we have to log the request
-		if (!$this->debuggerDisabled && $debugger !== false) {
-			$debugger->addItem(new StorageItem('memcache', 'memcache.' . $this->currentConfigurationName,
-				StorageItem::METHOD_CLEAR, null, microtime(true) - $startTime));
-		}
+		$this->addDebugItem(
+				'memcache',
+				StorageItem::METHOD_CLEAR,
+				null,
+				microtime(true) - $startTime
+		);
 	}
 
 	/**

@@ -1,0 +1,15 @@
+services:
+    yapepBase.errorHandlerRegistry:
+        class: YapepBase\ErrorHandler\ErrorHandlerRegistry
+        tags: [{name: yapepBase.skipAutoResolver}]
+
+    yapepBase.errorHandlerHelper:
+        class: YapepBase\ErrorHandler\ErrorHandlerHelper
+        tags: [{name: yapepBase.skipAutoResolver}]
+
+    yapepBase.defaultErrorController:
+        class: YapepBase\Controller\DefaultErrorController
+        arguments:
+            - @yapepBase.currentRequest
+            - @yapepBase.currentResponse
+        tags: [{name: yapepBase.skipAutoresolver}]

@@ -32,7 +32,8 @@ class TimeItem extends ItemAbstract {
 	 */
 	public function __construct($name) {
 		$time = microtime(true);
-		$debugger = Application::getInstance()->getDiContainer()->getDebugger();
+		// FIXME This should be injected via injection
+		$debugger = Application::getInstance()->getDiContainer()->get('yapepBase.debuggerRegistry');
 
 		$this->data = array(
 			self::FIELD_NAME               => $name,

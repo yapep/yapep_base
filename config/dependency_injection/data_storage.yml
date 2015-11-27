@@ -1,0 +1,8 @@
+services:
+    yapepBase.dbFactory:
+        class: YapepBase\Database\DbFactory
+        tags: [{name: yapepBase.skipAutoResolver}]
+
+    yapepBase.storageFactory:
+        class: YapepBase\Storage\StorageFactory
+        tags: [{name: yapepBase.skipAutoResolver}]

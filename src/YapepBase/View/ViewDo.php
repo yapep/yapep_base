@@ -11,7 +11,6 @@
 namespace YapepBase\View;
 
 use YapepBase\Exception\ParameterException;
-use YapepBase\Application;
 use YapepBase\Mime\MimeType;
 use YapepBase\Exception\Exception;
 

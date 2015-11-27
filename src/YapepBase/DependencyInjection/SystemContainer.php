@@ -141,21 +141,6 @@ class SystemContainer extends Container {
 	 * Constructor. Sets up the system DI objects.
 	 */
 	public function __construct() {
-		$this[self::KEY_ERROR_LOG_MESSAGE] = function($container) {
-			return new ErrorMessage();
-		};
-		$this[self::KEY_ERROR_HANDLER_REGISTRY] = $this->share(function($container) {
-			return new ErrorHandlerRegistry();
-		});
-		$this[self::KEY_EVENT_HANDLER_REGISTRY] = $this->share(function($container) {
-			return new EventHandlerRegistry();
-		});
-		$this[self::KEY_SESSION_REGISTRY] = $this->share(function($container) {
-			return new SessionRegistry();
-		});
-		$this[self::KEY_LOGGER_REGISTRY] = $this->share(function($container) {
-			return new LoggerRegistry();
-		});
 		if (class_exists('\Memcache')) {
 			$this[self::KEY_MEMCACHE] = function($container) {
 				return new \Memcache();
@@ -168,27 +153,7 @@ class SystemContainer extends Container {
 		}
 		$this[self::KEY_DEFAULT_ERROR_CONTROLLER_NAME] = '\\YapepBase\\Controller\\DefaultErrorController';
 
-		$this[self::KEY_VIEW_DO] = $this->share(function($container) {
-			return new ViewDo(MimeType::HTML);
-		});
-
 		$this[self::KEY_FILE_RESOURCE_HANDLER] = '\\YapepBase\\File\\ResourceHandlerPhp';
-
-		$this[self::KEY_FILE_HANDLER] = function($container) {
-			return new FileHandlerPhp();
-		};
-
-		$this[self::KEY_COMMAND_EXECUTOR] = function($container) {
-			return new CommandExecutor();
-		};
-
-		$this[self::KEY_CURL_FACTORY] = function($container) {
-			return new CurlFactory();
-		};
-
-		$this[self::KEY_CURL_HTTP_REQUEST] = function($container) {
-			return new CurlHttpRequest();
-		};
 
 		$this->searchNamespaces[self::NAMESPACE_SEARCH_BO] = array();
 		$this->searchNamespaces[self::NAMESPACE_SEARCH_DAO] = array();

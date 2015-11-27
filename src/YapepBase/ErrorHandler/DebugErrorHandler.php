@@ -12,6 +12,7 @@ namespace YapepBase\ErrorHandler;
 
 
 use YapepBase\Application;
+use YapepBase\Debugger\DebuggerRegistry;
 use YapepBase\Debugger\Item\ErrorItem;
 use YapepBase\ErrorHandler\IErrorHandler;
 use YapepBase\ErrorHandler\ErrorHandlerHelper;
@@ -25,6 +26,22 @@ use YapepBase\ErrorHandler\ErrorHandlerHelper;
 class DebugErrorHandler implements IErrorHandler {
 
 	/**
+	 * The debugger registry instance.
+	 *
+	 * @var DebuggerRegistry
+	 */
+	protected $debuggerRegistry;
+
+	/**
+	 * DebugErrorHandler constructor.
+	 *
+	 * @param DebuggerRegistry $debuggerRegistry The debugger registry instance.
+	 */
+	public function __construct(DebuggerRegistry $debuggerRegistry) {
+		$this->debuggerRegistry = $debuggerRegistry;
+	}
+
+	/**
 	 * Handles a PHP error
 	 *
 	 * @param int    $errorLevel   The error code {@uses E_*}
@@ -36,11 +53,9 @@ class DebugErrorHandler implements IErrorHandler {
 	 * @param array  $backTrace    The debug backtrace of the error.
 	 */
 	public function handleError($errorLevel, $message, $file, $line, $context, $errorId, array $backTrace = array()) {
-		$debugger = Application::getInstance()->getDiContainer()->getDebugger();
-
-		if ($debugger) {
+		if ($this->debuggerRegistry->hasRenderers()) {
 			$debugItem = new ErrorItem($errorLevel, $message, $file, $line, $context, $errorId);
-			$debugger->addItem($debugItem);
+			$this->debuggerRegistry->addItem($debugItem);
 		}
 	}
 
@@ -64,15 +79,13 @@ class DebugErrorHandler implements IErrorHandler {
 	 * @param int    $line         The line in the file where the error occured.
 	 * @param string $errorId      The internal ID of the error.
 	 */
-	function handleShutdown($errorLevel, $message, $file, $line, $errorId) {
-		$debugger = Application::getInstance()->getDiContainer()->getDebugger();
-
-		if ($debugger) {
+	public function handleShutdown($errorLevel, $message, $file, $line, $errorId) {
+		if ($this->debuggerRegistry->hasRenderers()) {
 			$debugItem = new ErrorItem($errorLevel, $message, $file, $line, array(), $errorId);
-			$debugger->addItem($debugItem);
+			$this->debuggerRegistry->addItem($debugItem);
 
 			// In case of Fatal error, the code probably halted, so we have to handle it
-			$debugger->handleShutdown();
+			$this->debuggerRegistry->handleShutdown();
 		}
 	}
 }

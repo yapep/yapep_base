@@ -59,7 +59,8 @@ abstract class BaseController implements IController {
 	public function __construct(IRequest $request, IResponse $response) {
 		$this->request = $request;
 		$this->response = $response;
-		Application::getInstance()->getDiContainer()->getViewDo()->clear();
+		// TODO rethink this
+		Application::getInstance()->getDiContainer()->get('yapepBase.viewDo')->clear();
 	}
 
 	/**
@@ -85,7 +86,7 @@ abstract class BaseController implements IController {
 	}
 
 	/**
-	 * Runs before after the action but before the rendering.
+	 * Runs after the action but before the rendering.
 	 *
 	 * Can be useful to set collected data to the View.
 	 *
@@ -187,6 +188,8 @@ abstract class BaseController implements IController {
 	 */
 	protected function internalRedirect($controllerName, $action) {
 		Application::getInstance()->setDispatchedAction($controllerName, $action);
+		// This should use a controller factory
+		// Probably the Application should do this
 		$controller = Application::getInstance()->getDiContainer()->getController($controllerName, $this->request,
 			$this->response);
 		$controller->run($action);
@@ -204,7 +207,8 @@ abstract class BaseController implements IController {
 	 * @throws \Exception   If the key already exists.
 	 */
 	protected function setToView($nameOrData, $value = null) {
-		Application::getInstance()->getDiContainer()->getViewDo()->set($nameOrData, $value);
+		// FIXME rethink this
+		Application::getInstance()->getDiContainer()->get('yapepBase.viewDo')->set($nameOrData, $value);
 	}
 
 	/**

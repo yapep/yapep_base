@@ -1,0 +1,9 @@
+services:
+    yapepBase.errorLogMessage:
+        class: YapepBase\Log\Message\ErrorMessage
+        tags: [{name: yapepBase.skipAutoResolver}]
+        scope: prototype
+
+    yapepBase.loggerRegistry:
+        class: YapepBase\Log\LoggerRegistry
+        tags: [{name: yapepBase.skipAutoResolver}]

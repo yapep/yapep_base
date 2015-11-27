@@ -9,7 +9,7 @@
  */
 
 namespace YapepBase\File;
-use YapepBase\Application;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use YapepBase\Exception\File\NotFoundException;
 use YapepBase\Exception\ParameterException;
 use YapepBase\Shell\CommandExecutor;
@@ -25,6 +25,22 @@ use YapepBase\Shell\ICommandExecutor;
 class FileHandlerUnix implements IFileHandler {
 
 	/**
+	 * The DI container instance.
+	 *
+	 * @var ContainerInterface
+	 */
+	protected $diContainer;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param ContainerInterface $diContainer The DI container instance.
+	 */
+	public function __construct(ContainerInterface $diContainer) {
+		$this->diContainer = $diContainer;
+	}
+
+	/**
 	 * Sets the access and modification time of a file or directory.
 	 *
 	 * @link http://php.net/manual/en/function.touch.php
@@ -38,20 +54,22 @@ class FileHandlerUnix implements IFileHandler {
 	 * @throws \YapepBase\Exception\File\Exception   If the operation failed.
 	 */
 	public function touch($path, $modificationTime = null, $accessTime = null) {
-		$diContainer = Application::getInstance()->getDiContainer();
 		if (empty($modificationTime) && empty($accessTime)) {
-			$this->runCommandAndThrowExceptionIfFailed($diContainer->getCommandExecutor('touch')
+			$this->runCommandAndThrowExceptionIfFailed($this->diContainer->get('yapepBase.commandExecutor')
+				->setCommand('touch')
 				->addParam(null, $path), 'Touch failed for path: ' . $path);
 		} else {
 			if (!empty($modificationTime)) {
-				$this->runCommandAndThrowExceptionIfFailed($diContainer->getCommandExecutor('touch')
+				$this->runCommandAndThrowExceptionIfFailed($this->diContainer->get('yapepBase.commandExecutor')
+					->setCommand('touch')
 					->addParam('-m')
 					->addParam('-t', date('YmdHi.s', $modificationTime))
 					->addParam(null, $path), 'Touch failed for path (modification time): ' . $path);
 			}
 
 			if (!empty($accessTime)) {
-				$this->runCommandAndThrowExceptionIfFailed($diContainer->getCommandExecutor('touch')
+				$this->runCommandAndThrowExceptionIfFailed($this->diContainer->get('yapepBase.commandExecutor')
+					->setCommand('touch')
 					->addParam('-a')
 					->addParam('-t', date('YmdHi.s', $accessTime))
 					->addParam(null, $path), 'Touch failed for path (access time): ' . $path);
@@ -73,7 +91,8 @@ class FileHandlerUnix implements IFileHandler {
 	 * @throws \YapepBase\Exception\File\Exception   If the operation failed.
 	 */
 	public function makeDirectory($path, $mode = 0755, $isRecursive = true) {
-		$command = Application::getInstance()->getDiContainer()->getCommandExecutor('mkdir')
+		$command = $this->diContainer->get('yapepBase.commandExecutor')
+			->setCommand('mkdir')
 			->addParam('-m', str_pad(decoct($mode), 5, '0', STR_PAD_LEFT));
 		if ($isRecursive) {
 			$command->addParam('-p');
@@ -101,17 +120,17 @@ class FileHandlerUnix implements IFileHandler {
 			? CommandExecutor::OUTPUT_REDIRECT_STDOUT_APPEND
 			: CommandExecutor::OUTPUT_REDIRECT_STDOUT;
 
-		$diContainer = Application::getInstance()->getDiContainer();
-
 		// Make sure the binary is run and not any alias or shell built-in.
-		$echoCommand = $diContainer->getCommandExecutor('env')
+		$echoCommand = $this->diContainer->get('yapepBase.commandExecutor')
+			->setCommand('env')
 			->addParam(null, 'echo')
 			->addParam('-n')
 			->addParam(null, $data)
 			->setOutputRedirection($redirectType, $path, true);
 
 		if ($lock) {
-			$this->runCommandAndThrowExceptionIfFailed($diContainer->getCommandExecutor('flock')
+			$this->runCommandAndThrowExceptionIfFailed($this->diContainer->get('yapepBase.commandExecutor')
+				->setCommand('flock')
 				->addParam('-x')
 				->addParam(null, $path)
 				->addParam('-c', $echoCommand->getCommand()), 'Failed to write data to file: ' . $path);
@@ -159,7 +178,8 @@ class FileHandlerUnix implements IFileHandler {
 		}
 
 		$this->runCommandAndThrowExceptionIfFailed(
-			Application::getInstance()->getDiContainer()->getCommandExecutor('chown')
+			$this->diContainer->get('yapepBase.commandExecutor')
+				->setCommand('chown')
 				->addParam(null, (string)$user . ':' . (string)$group)
 				->addParam(null, $path),
 			'Failed to set the group "' . $group . '" and user "' . $user . '" of the resource: ' . $path);
@@ -184,7 +204,8 @@ class FileHandlerUnix implements IFileHandler {
 		}
 
 		$this->runCommandAndThrowExceptionIfFailed(
-			Application::getInstance()->getDiContainer()->getCommandExecutor('chmod')
+			$this->diContainer->get('yapepBase.commandExecutor')
+				->setCommand('chmod')
 				->addParam(null, decoct($mode))
 				->addParam(null, $path),
 			'Failed to set the mode "' . decoct($mode) . '" of the resource: ' . $path);
@@ -211,7 +232,8 @@ class FileHandlerUnix implements IFileHandler {
 		}
 
 		$this->runCommandAndThrowExceptionIfFailed(
-			Application::getInstance()->getDiContainer()->getCommandExecutor('cp')
+			$this->diContainer->get('yapepBase.commandExecutor')
+				->setCommand('cp')
 				->addParam(null, $source)
 				->addParam(null, $destination),
 			'Failed to copy file from ' . $source . ' to ' . $destination);
@@ -236,7 +258,8 @@ class FileHandlerUnix implements IFileHandler {
 		}
 
 		$this->runCommandAndThrowExceptionIfFailed(
-			Application::getInstance()->getDiContainer()->getCommandExecutor('rm')
+			$this->diContainer->get('yapepBase.commandExecutor')
+				->setCommand('rm')
 				->addParam('-f')
 				->addParam(null, $path),
 			'Failed to remove file: ' . $path);
@@ -268,7 +291,8 @@ class FileHandlerUnix implements IFileHandler {
 			throw new Exception('The given directory is not empty: ' . $path);
 		}
 
-		$command = Application::getInstance()->getDiContainer()->getCommandExecutor('rm')
+		$command = $this->diContainer->get('yapepBase.commandExecutor')
+			->setCommand('rm')
 			->addParam('-f');
 
 		if ($isRecursive){
@@ -305,7 +329,8 @@ class FileHandlerUnix implements IFileHandler {
 		}
 
 		$this->runCommandAndThrowExceptionIfFailed(
-			Application::getInstance()->getDiContainer()->getCommandExecutor('mv')
+			$this->diContainer->get('yapepBase.commandExecutor')
+				->setCommand('mv')
 				->addParam(null, $sourcePath)
 				->addParam(null, $destinationPath)
 			, 'Failed to move file from ' . $sourcePath . ' to ' . $destinationPath);
@@ -330,7 +355,7 @@ class FileHandlerUnix implements IFileHandler {
 	 * @return string|bool   The full path of the current directory or FALSE on failure.
 	 */
 	public function getCurrentDirectory() {
-		$result = Application::getInstance()->getDiContainer()->getCommandExecutor('pwd')->run();
+		$result = $this->diContainer->get('yapepBase.commandExecutor')->setCommand('pwd')->run();
 
 		if (!$result->isSuccessful()) {
 			return false;
@@ -363,27 +388,31 @@ class FileHandlerUnix implements IFileHandler {
 			throw new Exception('The given path is not a file: ' . $path);
 		}
 
-		$diContainer = Application::getInstance()->getDiContainer();
-		$command = $diContainer->getCommandExecutor('cat')
+		$diContainer = $this->diContainer;
+		$command = $diContainer->get('yapepBase.commandExecutor')
+			->setCommand('cat')
 			->addParam(null, $path);
 
 		if ($maxLength === 0) {
 			// With the maxlength being 0 we always return an empty string.
 			return '';
 		} elseif ($offset > 0) {
-			$tailCommand = $diContainer->getCommandExecutor('tail')
+			$tailCommand = $diContainer->get('yapepBase.commandExecutor')
+				->setCommand('tail')
 				->addParam('-c', '+' . ($offset + 1));
 
 			$command->setChainedCommand($tailCommand, CommandExecutor::OPERATOR_PIPE);
 
 			if ($maxLength > 0) {
-				$headCommand = $diContainer->getCommandExecutor('head')
+				$headCommand = $diContainer->get('yapepBase.commandExecutor')
+					->setCommand('head')
 					->addParam('-c', (int)$maxLength);
 				$tailCommand->setChainedCommand($headCommand, CommandExecutor::OPERATOR_PIPE);
 			}
 		} elseif ((int)$maxLength > 0) {
 			// The file_get_contents's maxlen parameter does not have a default value
-			$headCommand = $diContainer->getCommandExecutor('head')
+			$headCommand = $diContainer->get('yapepBase.commandExecutor')
+				->setCommand('head')
 				->addParam('-c', (int)$maxLength);
 			$command->setChainedCommand($headCommand, CommandExecutor::OPERATOR_PIPE);
 		}
@@ -407,7 +436,8 @@ class FileHandlerUnix implements IFileHandler {
 		}
 
 		// Run ls through env, because on a lot of systems ls is aliased
-		$result = Application::getInstance()->getDiContainer()->getCommandExecutor('env')
+		$result = $this->diContainer->get('yapepBase.commandExecutor')
+			->setCommand('env')
 			->addParam(null, 'ls')
 			->addParam('-1')
 			->addParam('-A')
@@ -633,7 +663,7 @@ class FileHandlerUnix implements IFileHandler {
 	 * @return bool
 	 */
 	protected function runTestCommandOnFile($path, $testTypeSwitch) {
-		return Application::getInstance()->getDiContainer()->getCommandExecutor('env')
+		return $this->diContainer->get('yapepBase.commandExecutor')->setCommand('env')
 			->addParam(null, 'test')
 			->addParam($testTypeSwitch, $path)
 			->run()

@@ -12,14 +12,14 @@
 namespace YapepBase\Storage;
 
 
-use YapepBase\Application;
+use YapepBase\Debugger\DebuggerRegistry;
 use YapepBase\Debugger\Item\StorageItem;
 use YapepBase\Exception\ConfigException;
 use YapepBase\Exception\File\Exception as FileException;
 use YapepBase\Exception\File\NotFoundException;
 use YapepBase\Exception\ParameterException;
 use YapepBase\Exception\StorageException;
-use YapepBase\File\FileHandlerPhp;
+use YapepBase\File\IFileHandler;
 
 /**
  * FileStorage class
@@ -103,13 +103,6 @@ class FileStorage extends StorageAbstract {
 	protected $readOnly = false;
 
 	/**
-	 * If TRUE, no debug items are created by this storage.
-	 *
-	 * @var bool
-	 */
-	protected $debuggerDisabled;
-
-	/**
 	 * The File handler object.
 	 *
 	 * @var \YapepBase\File\FileHandlerPhp
@@ -119,18 +112,17 @@ class FileStorage extends StorageAbstract {
 	/**
 	 * Constructor.
 	 *
-	 * @param string $configName   The name of the configuration to use.
+	 * @param DebuggerRegistry $deubberRegistry The debugger registry.
+	 * @param IFileHandler     $fileHandler     The filehandler instance.
+	 * @param string           $configName      The name of the configuration to use.
 	 *
 	 * @throws \YapepBase\Exception\ConfigException    On configuration errors.
 	 * @throws \YapepBase\Exception\StorageException   On storage errors.
 	 */
-	public function __construct($configName) {
-		// This is needed to be able to mock the used file handler easily
-		if (empty($this->fileHandler)) {
-			$this->fileHandler = new FileHandlerPhp();
-		}
+	public function __construct(DebuggerRegistry $debuggerRegistry,IFileHandler $fileHandler, $configName) {
+		$this->fileHandler = $fileHandler;
 
-		parent::__construct($configName);
+		parent::__construct($debuggerRegistry, $configName);
 	}
 
 	/**
@@ -163,6 +155,8 @@ class FileStorage extends StorageAbstract {
 	 * @throws \YapepBase\Exception\File\Exception     On filesystem errors.
 	 */
 	protected function setupConfig(array $config) {
+		parent::setupConfig($config);
+
 		if (empty($config['path'])) {
 			throw new ConfigException('Path is not set for FileStorage config ('
 				. $this->currentConfigurationName . ')');
@@ -178,7 +172,6 @@ class FileStorage extends StorageAbstract {
 		$this->fileMode         = empty($config['fileMode'])         ? 0644  : $config['fileMode'];
 		$this->hashKey          = empty($config['hashKey'])          ? false : (bool)$config['hashKey'];
 		$this->readOnly         = empty($config['readOnly'])         ? false : (bool)$config['readOnly'];
-		$this->debuggerDisabled = empty($config['debuggerDisabled']) ? false : (bool)$config['debuggerDisabled'];
 
 		// If the given path does not exist
 		if (!$this->fileHandler->checkIsPathExists($this->path)) {
@@ -249,11 +242,12 @@ class FileStorage extends StorageAbstract {
 		// Disable potential warnings if unit testing with vfsStream
 		$this->fileHandler->changeMode($fileName, $this->fileMode);
 
-		$debugger = Application::getInstance()->getDiContainer()->getDebugger();
-		if (!$this->debuggerDisabled && $debugger !== false) {
-			$debugger->addItem(new StorageItem('file', 'file.' . $this->currentConfigurationName,
-				StorageItem::METHOD_SET . ' ' . $key . ' for ' . $ttl, $data, microtime(true) - $startTime));
-		}
+		$this->addDebugItem(
+				'file',
+				StorageItem::METHOD_SET . ' ' . $key . ' for ' . $ttl,
+				$data,
+				microtime(true) - $startTime
+		);
 	}
 
 	/**
@@ -344,11 +338,12 @@ class FileStorage extends StorageAbstract {
 			}
 		}
 
-		$debugger = Application::getInstance()->getDiContainer()->getDebugger();
-		if (!$this->debuggerDisabled && $debugger !== false) {
-			$debugger->addItem(new StorageItem('file', 'file.' . $this->currentConfigurationName,
-				StorageItem::METHOD_GET . ' ' . $key, $data, microtime(true) - $startTime));
-		}
+		$this->addDebugItem(
+				'file',
+				StorageItem::METHOD_GET . ' ' . $key,
+				$data,
+				microtime(true) - $startTime
+		);
 
 		return $data;
 	}
@@ -379,11 +374,12 @@ class FileStorage extends StorageAbstract {
 			throw new StorageException('Unable to remove the file: ' . $fileName, 0, $e);
 		}
 
-		$debugger = Application::getInstance()->getDiContainer()->getDebugger();
-		if (!$this->debuggerDisabled && $debugger !== false) {
-			$debugger->addItem(new StorageItem('file', 'file.' . $this->currentConfigurationName,
-				StorageItem::METHOD_DELETE . ' ' . $key, null, microtime(true) - $startTime));
-		}
+		$this->addDebugItem(
+				'file',
+				StorageItem::METHOD_DELETE . ' ' . $key,
+				null,
+				microtime(true) - $startTime
+		);
 	}
 
 	/**
@@ -407,11 +403,12 @@ class FileStorage extends StorageAbstract {
 			throw new StorageException('Unable to remove the directory: ' . $this->path, 0, $e);
 		}
 
-		$debugger = Application::getInstance()->getDiContainer()->getDebugger();
-		if (!$this->debuggerDisabled && $debugger !== false) {
-			$debugger->addItem(new StorageItem('file', 'file.' . $this->currentConfigurationName,
-				StorageItem::METHOD_CLEAR, null, microtime(true) - $startTime));
-		}
+		$this->addDebugItem(
+				'file',
+				StorageItem::METHOD_CLEAR,
+				null,
+				microtime(true) - $startTime
+		);
 	}
 
 	/**
@@ -463,14 +460,5 @@ class FileStorage extends StorageAbstract {
 			'readOnly'         => $this->readOnly,
 			'debuggerDisabled' => $this->debuggerDisabled,
 		);
-//			'path',
-//			'storePlainText',
-//			'filePrefix',
-//			'fileSuffix',
-//			'fileMode',
-//			'hashKey',
-//			'readOnly',
-//			'debuggerDisabled'
-
 	}
 }

@@ -9,6 +9,7 @@
  */
 
 namespace YapepBase\Helper;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use YapepBase\Application;
 use YapepBase\Config;
 use YapepBase\Shell\CommandExecutor;
@@ -20,6 +21,22 @@ use YapepBase\Shell\CommandExecutor;
  * @subpackage Helper
  */
 class CommandOutputHelper {
+
+	/**
+	 * The DI container instance.
+	 *
+	 * @var ContainerInterface
+	 */
+	protected $diContainer;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param ContainerInterface $diContainer The DI container instance.
+	 */
+	public function __construct(ContainerInterface $diContainer) {
+		$this->diContainer = $diContainer;
+	}
 
 	/**
 	 * Runs the command and returns the command output and the separated STDERR in the outgoing parameter.
@@ -36,7 +53,7 @@ class CommandOutputHelper {
 	public function runCommandWithStdErr(CommandExecutor $command, &$stdErr) {
 		$dir         = Config::getInstance()->get('system.commandOutputHelper.work.path', '/tmp');
 		$pipePath    = tempnam($dir, 'stderr-');
-		$fileHandler = Application::getInstance()->getDiContainer()->getFileHandler();
+		$fileHandler = $this->diContainer->get('yapepBase.fileHandler');
 
 		try {
 			posix_mkfifo($pipePath, 0755);
