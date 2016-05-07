@@ -87,7 +87,7 @@ abstract class ControllerAbstract implements IController {
 	}
 
 	/**
-	 * Runs before after the action but before the rendering.
+	 * Runs after the action but before the rendering.
 	 *
 	 * Can be useful to set collected data to the View.
 	 *
@@ -96,6 +96,19 @@ abstract class ControllerAbstract implements IController {
 	 * @throws \YapepBase\Exception\ControllerException   On error.
 	 */
 	protected function runBeforeRender() {
+		// Empty default implementation. Should be implemented by descendant classes if needed
+	}
+
+	/**
+	 * Runs before the response is being set.
+	 *
+	 * Allows to modify the result of the action before it's set to response
+	 *
+	 * @param ViewAbstract|string $actionResult   The result of the called action
+	 *
+	 * @return void
+	 */
+	protected function runBeforeResponseSet(&$actionResult) {
 		// Empty default implementation. Should be implemented by descendant classes if needed
 	}
 
@@ -145,6 +158,8 @@ abstract class ControllerAbstract implements IController {
 
 		// We called the run method, but we did not rendered the output yet
 		$this->runBeforeRender();
+
+		$this->runBeforeResponseSet($result);
 
 		if (!empty($result)) {
 			if (is_string($result)) {

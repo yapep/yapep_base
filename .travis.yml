@@ -2,6 +2,9 @@ language: php
 php:
     - 5.3
     - 5.4
+    - 5.5
+    - 5.6
+    - 7.0
 before_install:
     - wget http://pecl.php.net/get/memcache-2.2.6.tgz
     - tar -xzf memcache-2.2.6.tgz
@@ -21,4 +24,4 @@ before_script:
     - YAPEPBASE_TEST_MYSQL_RO_PASSWORD=test; export YAPEPBASE_TEST_MYSQL_RO_PASSWORD
     - YAPEPBASE_TEST_MYSQL_RO_DATABASE=yapepbase_test; export YAPEPBASE_TEST_MYSQL_RO_DATABASE
     - YAPEPBASE_TEST_TEMPPATH=/tmp/yapepbase_test/filehandling; export YAPEPBASE_TEST_TEMPPATH
-script: phpunit --verbose test
+script: phpunit test

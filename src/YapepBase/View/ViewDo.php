@@ -265,11 +265,20 @@ class ViewDo {
 				break;
 
 			case 'object':
-				if (($value instanceof \Iterator) && ($value instanceof \ArrayAccess)) {
-					foreach ($value as $elementKey => $elementValue) {
-						$value[$elementKey] = $this->escapeForHtml($elementValue);
+				if (
+					($value instanceof \ArrayAccess)
+					&&
+					(
+						($value instanceof \Iterator)
+						||
+						($value instanceof \IteratorAggregate)
+					)
+				) {
+					$clonedObject = clone($value);
+					foreach ($clonedObject as $elementKey => $elementValue) {
+						$clonedObject[$elementKey] = $this->escapeForHtml($elementValue);
 					}
-					return $value;
+					return $clonedObject;
 				} elseif (method_exists($value, '__toString')) {
 					return $this->escapeForHtml((string)$value);
 				} else {
@@ -286,5 +295,27 @@ class ViewDo {
 				return $value;
 				break;
 		}
+	}
+
+	/**
+	 * Returns all the data set as an associative array
+	 *
+	 * @param bool   $raw   If TRUE it will return the raw (unescaped) data.
+	 *
+	 * @return array
+	 */
+	public function toArray($raw = false) {
+		$result = array();
+
+		if ($raw) {
+			$result = $this->dataRaw;
+		}
+		else {
+			foreach (array_keys($this->dataRaw) as $key) {
+				$result[$key] = $this->get($key);
+			}
+		}
+
+		return $result;
 	}
 }

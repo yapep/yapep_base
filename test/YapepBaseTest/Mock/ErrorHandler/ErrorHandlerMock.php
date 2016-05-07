@@ -40,7 +40,7 @@ class ErrorHandlerMock implements IErrorHandler {
 		);
 	}
 
-	public function handleException(\Exception $exception, $errorId) {
+	public function handleException($exception, $errorId) {
 		$this->handledExceptions[] = array(
 			'exception' => $exception,
 			'errorId'   => $errorId,
