@@ -9,6 +9,8 @@
  */
 
 namespace YapepBase\Batch;
+
+
 use YapepBase\Exception\Exception;
 
 /**
@@ -98,7 +100,7 @@ class CliUserInterfaceHelper {
 	/** Number of spaces used for 1 level of indentation */
 	const INDENT_SPACE_COUNT = 4;
 
-	/** The key of the all usages subarray in the usage switches array. */
+	/** The key of the all usages sub-array in the usage switches array. */
 	const ALL_USAGE_KEY = 'all';
 
 	/**

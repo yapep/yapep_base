@@ -10,13 +10,14 @@
 
 namespace YapepBase\Helper;
 
+
 /**
- * File related helper functions.
+ * Text related helper functions.
  *
  * @package    YapepBase
  * @subpackage Helper
  */
-class TextHelper {
+class TextHelper extends HelperAbstract {
 
 	/**
 	 * Strips slashes from the specified data.

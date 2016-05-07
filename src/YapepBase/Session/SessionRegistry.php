@@ -2,18 +2,19 @@
 /**
  * This file is part of YAPEPBase.
  *
- * @package      YapepBase
- * @subpackage   Session
- * @copyright    2011 The YAPEP Project All rights reserved.
- * @license      http://www.opensource.org/licenses/bsd-license.php BSD License
+ * @package    YapepBase
+ * @subpackage Session
+ * @copyright  2011 The YAPEP Project All rights reserved.
+ * @license    http://www.opensource.org/licenses/bsd-license.php BSD License
  */
 
 namespace YapepBase\Session;
+
+
 use YapepBase\Exception\Exception;
-use YapepBase\Session\SessionAbstract;
 
 /**
- * Registry containig all registered sessions.
+ * Registry containing all registered sessions.
  *
  * @package    YapepBase
  * @subpackage Session
@@ -28,7 +29,7 @@ class SessionRegistry {
 	protected $namespaces = array();
 
 	/**
-	 * Returns the session coresponding to namespace
+	 * Returns the session corresponding to namespace
 	 *
 	 * @param string $namespace   The namespace.
 	 *

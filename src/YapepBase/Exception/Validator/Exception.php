@@ -36,6 +36,9 @@ class Exception extends \YapepBase\Exception\Exception {
 	/** Error Code given when a checked value does not contain some characters it should. */
 	const EC_REQUIRED_CHARS_MISSING = 5;
 
+	/** Error Code given when two string is not identical. */
+	const EC_NOT_MATCH = 6;
+
 	/**
 	 * Constructor.
 	 *

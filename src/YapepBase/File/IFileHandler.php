@@ -151,14 +151,16 @@ interface IFileHandler {
 	 * @param string $sourcePath          Path of the file to move.
 	 * @param string $destinationPath     Destination of the moved file.
 	 * @param bool   $checkIfIsUploaded   If TRUE it will move the file only if the file was uploaded through HTTP.
+	 * @param bool   $overwrite           If TRUE the destination will be overwritten.
 	 *
 	 * @throws \YapepBase\Exception\File\NotFoundException   If the source file is not found.
-	 * @throws \YapepBase\Exception\File\Exception   If the source file is not uploaded through HTTP and its checked
-	 *                                               or the move failed.
+	 * @throws \YapepBase\Exception\File\Exception           If the source file is not uploaded through HTTP and
+	 *                                                       its checked or the move failed,
+	 *                                                       or the destination exists and it can't be overwritten.
 	 *
 	 * @return void
 	 */
-	public function move($sourcePath, $destinationPath, $checkIfIsUploaded = false);
+	public function move($sourcePath, $destinationPath, $checkIfIsUploaded = false, $overwrite = true);
 
 	/**
 	 * Returns the parent directory's path.
@@ -338,4 +340,17 @@ interface IFileHandler {
 	 * @return string
 	 */
 	public function getBaseName($path, $suffix = null);
+
+	/**
+	 * Changes the current working directory to the given one.
+	 *
+	 * @link http://php.net/manual/en/function.chdir.php
+	 *
+	 * @param string $path   The path of the directory.
+	 *
+	 * @throws \YapepBase\Exception\File\NotFoundException   If the given path is not a valid directory.
+	 *
+	 * @return void
+	 */
+	public function changeWorkingDirectory($path);
 }

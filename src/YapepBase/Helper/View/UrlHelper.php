@@ -2,17 +2,17 @@
 /**
  * This file is part of YAPEPBase.
  *
- * @package      YapepBase
- * @subpackage   Helper\View
- * @copyright    2011 The YAPEP Project All rights reserved.
- * @license      http://www.opensource.org/licenses/bsd-license.php BSD License
+ * @package    YapepBase
+ * @subpackage Helper\View
+ * @copyright  2011 The YAPEP Project All rights reserved.
+ * @license    http://www.opensource.org/licenses/bsd-license.php BSD License
  */
 
 namespace YapepBase\Helper\View;
 
-use YapepBase\Exception\Exception;
-use YapepBase\Helper\HelperAbstract;
+
 use YapepBase\Application;
+use YapepBase\Helper\HelperAbstract;
 use YapepBase\Router\ILanguageReverseRouter;
 
 /**

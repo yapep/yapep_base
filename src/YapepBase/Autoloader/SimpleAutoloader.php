@@ -41,7 +41,7 @@ class SimpleAutoloader implements IAutoloader {
 	 * Adds a path to use on class loading.
 	 *
 	 * @param array|string $path             The path(s) to use.
-	 * @param string       $forceNameSpace   A full namespace. If given all the classes in a namespace having
+	 * @param string       $forceNameSpace   A full namespace. If given, all the classes in a namespace having
 	 *                                          this prefix will be searched at this path only.
 	 *
 	 * @return \YapepBase\Autoloader\IAutoloader
@@ -49,8 +49,8 @@ class SimpleAutoloader implements IAutoloader {
 	public function addClassPath($path, $forceNameSpace = null) {
 		foreach ((array)$path as $pathItem) {
 			$pathItem = rtrim($pathItem, DIRECTORY_SEPARATOR);
-			if (!is_null($forceNameSpace)) {
 
+			if (!is_null($forceNameSpace)) {
 				$forceNameSpace = ltrim($forceNameSpace, '\\');
 				$this->classPathsWithNamespace[$forceNameSpace] = $pathItem;
 			}

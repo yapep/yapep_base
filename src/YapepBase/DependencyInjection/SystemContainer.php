@@ -12,11 +12,8 @@ namespace YapepBase\DependencyInjection;
 
 
 use YapepBase\Communication\CurlFactory;
-use YapepBase\Communication\CurlHttpRequest;
 use YapepBase\Debugger\IDebugger;
 use YapepBase\File\FileHandlerPhp;
-use YapepBase\Database\DbConnection;
-use YapepBase\DependencyInjection\Container;
 use YapepBase\ErrorHandler\ErrorHandlerRegistry;
 use YapepBase\Event\Event;
 use YapepBase\Event\EventHandlerRegistry;
@@ -66,14 +63,8 @@ class SystemContainer extends Container {
 	const KEY_FILE_HANDLER = 'fileHandler';
 	/** Key containing the command executor. */
 	const KEY_COMMAND_EXECUTOR = 'commandExecutor';
-	/**
-	 * Key containing the curl factory.
-	 *
-	 * @deprecated Use KEY_CURL_REQUEST instead
-	 */
+	/** Key containing the curl factory. */
 	const KEY_CURL_FACTORY = 'curlFactory';
-	/** Key containing the curl http request. */
-	const KEY_CURL_HTTP_REQUEST = 'curlHttpRequest';
 
 	/**
 	 * Name of the namespace which holds the controllers.
@@ -97,6 +88,30 @@ class SystemContainer extends Container {
 	 * Data Access Object, only responsible for reaching, modifying data (mostly Database)
 	 */
 	const NAMESPACE_SEARCH_DAO = 'dao';
+
+	/**
+	 * Name of the namespace which holds the Controller Helpers.
+	 *
+	 * Helper methods which can be used only in the Controller layer.
+	 * Typically methods what are handling request or response.
+	 */
+	const NAMESPACE_SEARCH_HELPER_CONTROLLER = 'controllerHelper';
+
+	/**
+	 * Name of the namespace which holds the View Helpers.
+	 *
+	 * Helper methods which can be used only in the View layer.
+	 * Typically methods what are using the ViewDo
+	 */
+	const NAMESPACE_SEARCH_HELPER_VIEW = 'viewHelper';
+
+	/**
+	 * Name of the namespace which holds the Helpers.
+	 *
+	 * Helper methods which can be used anywhere.
+	 * Typically methods what are manipulating data.
+	 */
+	const NAMESPACE_SEARCH_HELPER = 'helper';
 
 	/**
 	 * Name of the namespace which holds the Validators.
@@ -130,11 +145,14 @@ class SystemContainer extends Container {
 	 * @var array
 	 */
 	protected $searchNamespaces = array(
-		self::NAMESPACE_SEARCH_TEMPLATE   => array(),
-		self::NAMESPACE_SEARCH_CONTROLLER => array(),
-		self::NAMESPACE_SEARCH_BO         => array(),
-		self::NAMESPACE_SEARCH_DAO        => array(),
-		self::NAMESPACE_SEARCH_VALIDATOR  => array(),
+		self::NAMESPACE_SEARCH_TEMPLATE          => array(),
+		self::NAMESPACE_SEARCH_CONTROLLER        => array(),
+		self::NAMESPACE_SEARCH_BO                => array(),
+		self::NAMESPACE_SEARCH_DAO               => array(),
+		self::NAMESPACE_SEARCH_VALIDATOR         => array(),
+		self::NAMESPACE_SEARCH_HELPER            => array(),
+		self::NAMESPACE_SEARCH_HELPER_CONTROLLER => array(),
+		self::NAMESPACE_SEARCH_HELPER_VIEW       => array(),
 	);
 
 	/**
@@ -186,13 +204,12 @@ class SystemContainer extends Container {
 			return new CurlFactory();
 		};
 
-		$this[self::KEY_CURL_HTTP_REQUEST] = function($container) {
-			return new CurlHttpRequest();
-		};
-
-		$this->searchNamespaces[self::NAMESPACE_SEARCH_BO] = array();
-		$this->searchNamespaces[self::NAMESPACE_SEARCH_DAO] = array();
-		$this->searchNamespaces[self::NAMESPACE_SEARCH_VALIDATOR] = array();
+		$this->searchNamespaces[self::NAMESPACE_SEARCH_BO]                = array();
+		$this->searchNamespaces[self::NAMESPACE_SEARCH_DAO]               = array();
+		$this->searchNamespaces[self::NAMESPACE_SEARCH_VALIDATOR]         = array();
+		$this->searchNamespaces[self::NAMESPACE_SEARCH_HELPER]            = array();
+		$this->searchNamespaces[self::NAMESPACE_SEARCH_HELPER_CONTROLLER] = array();
+		$this->searchNamespaces[self::NAMESPACE_SEARCH_HELPER_VIEW]       = array();
 	}
 
 	/**
@@ -244,20 +261,9 @@ class SystemContainer extends Container {
 	 * Returns a CurlFactory instance.
 	 *
 	 * @return \YapepBase\Communication\CurlFactory
-	 *
-	 * @deprecated Use getCurlRequest() instead.
 	 */
 	public function getCurlFactory() {
 		return $this[self::KEY_CURL_FACTORY];
-	}
-
-	/**
-	 * Returns a CurlHttpRequest instance.
-	 *
-	 * @return \YapepBase\Communication\CurlHttpRequest
-	 */
-	public function getCurlHttpRequest() {
-		return $this[self::KEY_CURL_HTTP_REQUEST];
 	}
 
 	/**
@@ -524,23 +530,6 @@ class SystemContainer extends Container {
 	}
 
 	/**
-	 * Returns a DbTable by it's database namespace and name. Optionally passes it the connection to use.
-	 *
-	 * Db tables must be in a <daoNamespace>\Table\<databaseNamespace>\<name>Table namespace structure.
-	 *
-	 * @param string                           $databaseNamespace   Namespace of the database.
-	 * @param string                           $name                Name of the table class.
-	 * @param \YapepBase\Database\DbConnection $connection          The connection to use.
-	 *
-	 * @return \YapepBase\Database\DbTable
-	 */
-	public function getDbTable($databaseNamespace, $name, DbConnection $connection = null) {
-		$fullClassName = $this->searchForClass(self::NAMESPACE_SEARCH_DAO, 'Table\\' . $databaseNamespace
-			. '\\' . $name . 'Table');
-		return new $fullClassName($connection);
-	}
-
-	/**
 	 * Returns a Validator by it's name
 	 *
 	 * @param string $name   The name of the Validator class to return.
@@ -552,6 +541,51 @@ class SystemContainer extends Container {
 	 */
 	public function getValidator($name) {
 		$fullClassName = $this->searchForClass(self::NAMESPACE_SEARCH_VALIDATOR, $name . 'Validator');
+		return new $fullClassName();
+	}
+
+	/**
+	 * Returns a common helper by it's name
+	 *
+	 * @param string $name   The name of the Helper class to return.
+	 *                       (Without the namespace and Helper suffix)
+	 *
+	 * @return \YapepBase\Helper\HelperAbstract
+	 *
+	 * @throws \YapepBase\Exception\DiException   If the Helper was not found
+	 */
+	public function getHelper($name) {
+		$fullClassName = $this->searchForClass(self::NAMESPACE_SEARCH_HELPER, $name . 'Helper');
+		return new $fullClassName();
+	}
+
+	/**
+	 * Returns a helper for Controller usage by it's name
+	 *
+	 * @param string $name   The name of the Helper class to return.
+	 *                       (Without the namespace and Helper suffix)
+	 *
+	 * @return \YapepBase\Helper\HelperAbstract
+	 *
+	 * @throws \YapepBase\Exception\DiException   If the Helper was not found
+	 */
+	public function getHelperForController($name) {
+		$fullClassName = $this->searchForClass(self::NAMESPACE_SEARCH_HELPER_CONTROLLER, $name . 'Helper');
+		return new $fullClassName();
+	}
+
+	/**
+	 * Returns a helper for View usage by it's name
+	 *
+	 * @param string $name   The name of the Helper class to return.
+	 *                       (Without the namespace and Helper suffix)
+	 *
+	 * @return \YapepBase\Helper\HelperAbstract
+	 *
+	 * @throws \YapepBase\Exception\DiException   If the Helper was not found
+	 */
+	public function getHelperForView($name) {
+		$fullClassName = $this->searchForClass(self::NAMESPACE_SEARCH_HELPER_VIEW, $name . 'Helper');
 		return new $fullClassName();
 	}
 

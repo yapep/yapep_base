@@ -21,7 +21,7 @@ use YapepBase\Exception\ValueException;
  * @package      YapepBase
  * @subpackage   Util
  */
-class Collection extends ArrayObject {
+class Collection extends ArrayObjectAbstract {
 
 	/**
 	 * Throws a \YapepBase\Exception\ValueException, if $offset is not an integer

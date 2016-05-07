@@ -10,13 +10,14 @@
 
 namespace YapepBase\Helper;
 
+
 /**
  * File related helper functions.
  *
  * @package    YapepBase
  * @subpackage Helper
  */
-class FileHelper {
+class FileHelper extends HelperAbstract {
 
 	/**
 	 * Returns the environment of the given line from the given file.
@@ -41,5 +42,16 @@ class FileHelper {
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Puts a directory separator at the end of the given path if needed.
+	 *
+	 * @param string $path   The path to format.
+	 *
+	 * @return string
+	 */
+	public function appendDirectorySeparator($path) {
+		return rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
 	}
 }

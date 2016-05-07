@@ -63,7 +63,7 @@ class ViewDo {
 	 *
 	 * @todo Review error handling. We should throw exceptions where possible. [szeber]
 	 */
-	final public function get($key, $raw = false) {
+	public function get($key, $raw = false) {
 		if (empty($key)) {
 			trigger_error('Empty key', E_USER_NOTICE);
 			return null;

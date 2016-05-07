@@ -13,7 +13,7 @@ namespace YapepBase\Database;
 
 
 use YapepBase\Config;
-use YapepBase\Database\DbConnection;
+use YapepBase\Database\DbConnectionAbstract;
 use YapepBase\Exception\ConfigException;
 use YapepBase\Exception\DatabaseException;
 
@@ -93,7 +93,7 @@ class DbFactory {
 	 * @param string $connectionName   The name of the database connection.
 	 * @param string $connectionType   The type of the database connection. {@uses self::TYPE_*}
 	 *
-	 * @return DbConnection   The requested connection.
+	 * @return DbConnectionAbstract   The requested connection.
 	 *
 	 * @throws DatabaseException   On configuration or connection errors.
 	 */
@@ -112,10 +112,9 @@ class DbFactory {
 				'isPersistent',
 				'password',
 				'path',
-				'port',
 				'user',
 				'useTraditionalStrictMode',
-				'timezone',
+				'timezone'
 			);
 			$configData = array();
 			foreach ($properties as $property) {
@@ -196,7 +195,7 @@ class DbFactory {
 	 * @param array  $configuration    The configuration data.
 	 * @param string $connectionName   The name of the connection.
 	 *
-	 * @return DbConnection   The connection instance.
+	 * @return DbConnectionAbstract   The connection instance.
 	 *
 	 * @throws DatabaseException   On configuration or connection errors.
 	 */
@@ -223,7 +222,7 @@ class DbFactory {
 	public static function clearConnections() {
 		foreach (self::$connections as $connectionTypes) {
 			foreach($connectionTypes as $connection) {
-				/** @var \YapepBase\Database\DbConnection $connection */
+				/** @var \YapepBase\Database\DbConnectionAbstract $connection */
 				$connection->disconnect();
 			}
 		}

@@ -9,6 +9,8 @@
  */
 
 namespace YapepBase\File;
+
+
 use YapepBase\Application;
 use YapepBase\Exception\File\NotFoundException;
 use YapepBase\Exception\ParameterException;
@@ -283,20 +285,22 @@ class FileHandlerUnix implements IFileHandler {
 	/**
 	 * Moves the given file to the given destination.
 	 *
-	 * @link                                         http://php.net/manual/en/function.rename.php
-	 * @link                                         http://php.net/manual/en/function.move-uploaded-file.php
+	 * @link http://php.net/manual/en/function.rename.php
+	 * @link http://php.net/manual/en/function.move-uploaded-file.php
 	 *
 	 * @param string $sourcePath          Path of the file to move.
 	 * @param string $destinationPath     Destination of the moved file.
 	 * @param bool   $checkIfIsUploaded   If TRUE it will move the file only if the file was uploaded through HTTP.
+	 * @param bool   $overwrite           If TRUE the destination will be overwritten.
 	 *
 	 * @throws \YapepBase\Exception\File\NotFoundException   If the source file is not found.
-	 * @throws \YapepBase\Exception\File\Exception   If the source file is not uploaded through HTTP and its checked
-	 *                                               or the move failed.
+	 * @throws \YapepBase\Exception\File\Exception           If the source file is not uploaded through HTTP and
+	 *                                                       its checked or the move failed,
+	 *                                                       or the destination exists and it can't be overwritten.
 	 *
 	 * @return void
 	 */
-	public function move($sourcePath, $destinationPath, $checkIfIsUploaded = false) {
+	public function move($sourcePath, $destinationPath, $checkIfIsUploaded = false, $overwrite = true) {
 		if (!$this->checkIsPathExists($sourcePath)) {
 			throw new NotFoundException($sourcePath, 'The source file is not found for a file move: ' . $sourcePath);
 		}
@@ -304,11 +308,19 @@ class FileHandlerUnix implements IFileHandler {
 			throw new Exception('The given file is not uploaded through HTTP: ' . $sourcePath);
 		}
 
-		$this->runCommandAndThrowExceptionIfFailed(
-			Application::getInstance()->getDiContainer()->getCommandExecutor('mv')
-				->addParam(null, $sourcePath)
-				->addParam(null, $destinationPath)
-			, 'Failed to move file from ' . $sourcePath . ' to ' . $destinationPath);
+		if (!$overwrite && $this->checkIsPathExists($destinationPath)) {
+			throw new Exception('The given destination already exists: ' . $destinationPath);
+		}
+
+		$command = Application::getInstance()->getDiContainer()->getCommandExecutor('mv')
+						->addParam(null, $sourcePath)
+						->addParam(null, $destinationPath);
+		if ($overwrite) {
+			$command->addParam('-f');
+		}
+
+		$this->runCommandAndThrowExceptionIfFailed($command,
+			'Failed to move file from ' . $sourcePath . ' to ' . $destinationPath);
 	}
 
 	/**
@@ -658,5 +670,24 @@ class FileHandlerUnix implements IFileHandler {
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Changes the current working directory to the given one.
+	 *
+	 * @link http://php.net/manual/en/function.chdir.php
+	 *
+	 * @param string $path The path of the directory.
+	 *
+	 * @throws \YapepBase\Exception\File\NotFoundException   If the given path is not a valid directory.
+	 *
+	 * @return void
+	 */
+	public function changeWorkingDirectory($path) {
+		if (!$this->checkIsDirectory($path)) {
+			throw new Exception('Given path is not a directory "' . $path . '"');
+		}
+
+		chdir($path);
 	}
 }

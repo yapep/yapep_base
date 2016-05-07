@@ -9,20 +9,17 @@
 
 
 namespace YapepBase;
+
+
 use YapepBase\Exception\RedirectException;
 use YapepBase\Event\Event;
 use YapepBase\Response\IResponse;
 use YapepBase\Request\IRequest;
-use YapepBase\ErrorHandler\IErrorHandler;
 use YapepBase\Router\IRouter;
 use YapepBase\DependencyInjection\SystemContainer;
-use YapepBase\Debugger\IDebugger;
 use YapepBase\Exception\Exception;
 use YapepBase\Exception\HttpException;
-use YapepBase\ErrorHandler\ErrorHandlerRegistry;
-use YapepBase\Request\HttpRequest;
 use YapepBase\Exception\ControllerException;
-use YapepBase\Event\EventHandlerRegistry;
 use YapepBase\Exception\RouterException;
 use YapepBase\I18n\ITranslator;
 
@@ -246,7 +243,7 @@ class Application {
 	 *
 	 * @return \YapepBase\I18n\ITranslator   The instance.
 	 *
-	 * @throws Exception\Exception   If no translator is configured.
+	 * @throws \YapepBase\Exception\Exception   If no translator is configured.
 	 */
 	public function getI18nTranslator() {
 		if (empty($this->i18nTranslator)) {

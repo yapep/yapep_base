@@ -22,7 +22,7 @@ use YapepBase\Exception\DatabaseException;
  * @package    YapepBase
  * @subpackage Database
  */
-class MysqlConnection extends DbConnection {
+class MysqlConnection extends DbConnectionAbstract {
 
 	/**
 	 * Opens the connection.

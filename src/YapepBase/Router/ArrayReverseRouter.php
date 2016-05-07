@@ -76,12 +76,20 @@ class ArrayReverseRouter implements IReverseRouter {
 		$target = false;
 		if (is_array($routes[$key])) {
 			foreach ($routes[$key] as $route) {
+				if ($this->checkIfRuleIsRegex($route)) {
+					continue;
+				}
+
 				$target = $this->getParameterizedRoute($route, $params);
 				if (false !== $target) {
 					break;
 				}
 			}
 		} else {
+			if ($this->checkIfRuleIsRegex($routes[$key])) {
+				throw new RouterException('Only regex rule found, impossible to determine Target!');
+			}
+
 			$target = $this->getParameterizedRoute($routes[$key], $params);
 		}
 
@@ -132,5 +140,16 @@ class ArrayReverseRouter implements IReverseRouter {
 			return false;
 		}
 		return $route;
+	}
+
+	/**
+	 * Checks if the given rule is a regular expression.
+	 *
+	 * @param string $rule   The rule to check.
+	 *
+	 * @return bool
+	 */
+	protected function checkIfRuleIsRegex($rule) {
+		return (bool)preg_match('/^#.*#[a-z]*$/i', $rule);
 	}
 }

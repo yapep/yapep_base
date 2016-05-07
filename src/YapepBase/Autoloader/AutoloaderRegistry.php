@@ -24,7 +24,7 @@ class AutoloaderRegistry {
 	/**
 	 * The autoloader instance for singleton-like operation.
 	 *
-	 * @var \YapepBase\Autoloader\AutoloaderRegistry
+	 * @var AutoloaderRegistry
 	 */
 	protected static $instance;
 
@@ -38,7 +38,7 @@ class AutoloaderRegistry {
 	/**
 	 * Singleton instance getter.
 	 *
-	 * @return \YapepBase\Autoloader\AutoloaderRegistry
+	 * @return AutoloaderRegistry
 	 *
 	 * @codeCoverageIgnore
 	 */
@@ -65,7 +65,7 @@ class AutoloaderRegistry {
 	/**
 	 * Adds a new autoloader object to the end of the list.
 	 *
-	 * @param \YapepBase\Autoloader\IAutoloader $autoloader   The autoloader object to register.
+	 * @param IAutoloader $autoloader   The autoloader object to register.
 	 *
 	 * @return void
 	 */
@@ -76,7 +76,7 @@ class AutoloaderRegistry {
 	/**
 	 * Adds a new autoloader object to the beginning of the list.
 	 *
-	 * @param \YapepBase\Autoloader\IAutoloader $autoloader   The autoloader object to register.
+	 * @param IAutoloader $autoloader   The autoloader object to register.
 	 *
 	 * @return void
 	 */
